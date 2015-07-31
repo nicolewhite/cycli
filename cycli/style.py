@@ -6,6 +6,8 @@ class CypherStyle(Style):
     styles = {
         Token.Keyword: '#3498DB',
         Token.String: '#E67E22',
+        Token.Name: '#1ABC9C',
+        Token.Pattern: '#E74C3C',
 
         Token.Line: 'bg:#000000 #ffffff',
 

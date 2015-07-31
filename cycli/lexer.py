@@ -1,6 +1,6 @@
 import re
 from pygments.lexer import RegexLexer
-from pygments.token import Punctuation, Text, Comment, Operator, Keyword, Name, String, Number
+from pygments.token import Text, Comment, Operator, Keyword, Name, String, Number, Token
 
 __all__ = ["CypherLexer"]
 
@@ -28,10 +28,12 @@ class CypherLexer(RegexLexer):
              r'|NULL|ON|OPTIONAL|ORDER|PERIODIC|PROFILE|REMOVE|RETURN|SCAN|SET'
              r'|SKIP|START|THEN|TRUE|UNION|UNIQUE|UNWIND|USING|WHEN|WHERE|WITH)\b', Keyword),
             (r'[+*/<>=~!@#%^&|`?-]', Operator),
-            (r'[0-9]+', Number.Integer),
+            (r'[0-9]+', Name),
             (r"'(''|[^'])*'", String.Single),
             (r'"(""|[^"])*"', String.Symbol),
             (r'[a-zA-Z_][a-zA-Z0-9_]*', Name),
-            (r'[;:()\[\],\.]', Punctuation)
+            (r'-->|<--|\]->|<-\[-|\[|\]-|\[|\]', Token.Pattern),
+            (r'\.', Token.Pattern),
+            (r'\(|\)', Token.Pattern)
         ]
     }
