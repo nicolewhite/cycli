@@ -1,5 +1,4 @@
 from pygments.style import Style
-from pygments.styles.default import DefaultStyle
 from pygments.token import Token
 
 class CypherStyle(Style):
@@ -24,8 +23,6 @@ class CypherStyle(Style):
 
         Token.AfterInput: 'bg:#ff44ff #000000',
     }
-
-    # styles.update(DefaultStyle.styles)
 
 
 
