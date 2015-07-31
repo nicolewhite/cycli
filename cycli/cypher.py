@@ -6,4 +6,4 @@ FUNCS = [x.upper() for x in FUNCS]
 PREDS = [x.upper() for x in PREDS]
 KEYWORDS = [x.upper() for x in KEYWORDS]
 
-words = FUNCS + PREDS + KEYWORDS
+cypher_words = FUNCS + PREDS + KEYWORDS

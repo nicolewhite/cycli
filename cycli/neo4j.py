@@ -18,4 +18,4 @@ for label in labels:
 
 props = list(set(props))
 
-words = reltypes + labels + props
+neo4j_words = reltypes + labels + props

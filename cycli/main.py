@@ -1,40 +1,48 @@
 from __future__ import unicode_literals
 
-from prompt_toolkit.contrib.completers import WordCompleter
-from prompt_toolkit.shortcuts import get_input
+from prompt_toolkit import Application, CommandLineInterface, AbortAction
 from prompt_toolkit.history import History
+from prompt_toolkit.shortcuts import create_default_layout, create_eventloop
+from prompt_toolkit.filters import Always
+
+from pygments.token import Token
+
 from lexer import CypherLexer
+from style import CypherStyle
+from completer import CypherCompleter
+from buffer import CypherBuffer
+from neo4j import graph
 
-import neo4j
-import cypher
-
-words = neo4j.words + cypher.words
-
-completer = WordCompleter(words, ignore_case=True, match_middle=True)
 
 def run():
     print "~~~ Welcome to cycli! ~~~\n"
 
-    history = History()
+    def get_tokens(x):
+        return [(Token.Prompt, "> ")]
 
-    while True:
-        query = get_input("> ", completer=completer, history=history, lexer=CypherLexer)
+    layout = create_default_layout(lexer=CypherLexer, get_prompt_tokens=get_tokens, reserve_space_for_menu=True)
+    buff = CypherBuffer(history=History(), completer=CypherCompleter, complete_while_typing=Always())
+    application = Application(style=CypherStyle, buffer=buff, layout=layout, on_exit=AbortAction.RAISE_EXCEPTION)
+    cli = CommandLineInterface(application=application, eventloop=create_eventloop())
 
-        if query == "quit":
-            break
+    try:
+        while True:
+            document = cli.run()
+            query = document.text
 
-        while not query.endswith(";"):
-            query += " "
-            query += get_input("> ", completer=completer, history=history, lexer=CypherLexer)
+            if query == "quit;":
+                raise Exception
 
-        try:
-            results = neo4j.graph.cypher.execute(query)
-        except Exception as e:
-            results = e
+            try:
+                result = graph.cypher.execute(query)
+            except Exception as e:
+                result = e
 
-        print results
+            print result
 
-    print "Goodbye!"
+    except:
+        print "Goodbye!"
+
 
 if __name__ == '__main__':
     run()
