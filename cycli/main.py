@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from prompt_toolkit.contrib.completers import WordCompleter
 from prompt_toolkit.shortcuts import get_input
 from prompt_toolkit.history import History
-from pygments.lexers.graph import CypherLexer
+from lexer import CypherLexer
 
 import neo4j
 import cypher
