@@ -32,7 +32,7 @@ class CypherLexer(RegexLexer):
             (r"'(''|[^'])*'", String.Single),
             (r'"(""|[^"])*"', String.Symbol),
             (r'[a-zA-Z_][a-zA-Z0-9_]*', Name),
-            (r'-->|<--|\]->|<-\[-|\[|\]-|\[|\]', Token.Pattern),
+            (r'-->|<--|\]->|<-\[|\)-\[|\]-\(|\[|\]-|\[|\]', Token.Pattern),
             (r'\.', Token.Pattern),
             (r'\(|\)', Token.Pattern)
         ]
