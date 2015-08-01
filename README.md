@@ -6,8 +6,7 @@ A Command Line Interface for Cypher.
 ## Install
 
 ```
-$ git clone https://github.com/nicolewhite/cycli.git
-$ sudo python cycli/setup.py install
+$ pip install cycli
 ```
 
 ## Usage
