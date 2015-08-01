@@ -18,12 +18,14 @@ def get_tokens(x):
 
 class Cycli:
 
-    def __init__(self, host, port):
+    def __init__(self, host, port, username, password):
         self.host = host
         self.port = port
+        self.username = username
+        self.password = password
 
     def run(self):
-        neo4j = Neo4j(self.host, self.port)
+        neo4j = Neo4j(self.host, self.port, self.username, self.password)
 
         labels = neo4j.labels()
         relationship_types = neo4j.relationship_types()
@@ -54,9 +56,17 @@ class Cycli:
 @click.command()
 @click.option("-h", "--host", default="localhost", help="The host address of Neo4j.")
 @click.option("-p", "--port", default="7474", help="The port number on which Neo4j is listening.")
-def run(host, port):
+@click.option("-u", "--username", default=False,
+              help="Username for Neo4j authentication. If provided, you will be prompted for a password.")
+def run(host, port, username):
     print "~~~ Welcome to cycli! ~~~\n"
-    cycli = Cycli(host, port)
+
+    password = None
+
+    if username:
+        password = click.prompt("Password", hide_input=True, show_default=False, type=str)
+
+    cycli = Cycli(host, port, username, password)
     cycli.run()
 
 
