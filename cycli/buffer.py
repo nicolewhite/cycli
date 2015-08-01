@@ -8,7 +8,15 @@ class CypherBuffer(Buffer):
         @Condition
         def is_multiline():
             text = self.document.text
-
-            return not text.endswith(";")
+            return not self.user_wants_out(text)
 
         super(self.__class__, self).__init__(*args, is_multiline=is_multiline, **kwargs)
+
+    def user_wants_out(self, text):
+        return any(
+            [
+                text.endswith(";"),
+                text == "quit",
+                text == "exit"
+            ]
+        )

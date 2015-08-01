@@ -30,7 +30,7 @@ def run():
             document = cli.run()
             query = document.text
 
-            if query == "quit;":
+            if query in ["quit", "exit"]:
                 raise Exception
 
             try:
