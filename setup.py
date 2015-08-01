@@ -19,10 +19,7 @@ setup(name='cycli',
       install_requires=[
         'prompt-toolkit==0.43',
         'py2neo==2.0.7',
-        'Pygments==2.0.2',
-        'six==1.9.0',
-        'wcwidth==0.1.4',
-        'wheel==0.24.0'
+        'requests==2.7.0',
       ],
       include_package_data=True,
       zip_safe=False,
