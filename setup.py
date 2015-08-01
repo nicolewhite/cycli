@@ -17,6 +17,7 @@ setup(name='cycli',
       license='MIT',
       packages=['cycli'],
       install_requires=[
+        'click==4.1',
         'prompt-toolkit==0.43',
         'Pygments==2.0.2',
         'py2neo==2.0.7',

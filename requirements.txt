@@ -1,3 +1,4 @@
+click==4.1
 prompt-toolkit==0.43
 py2neo==2.0.7
 Pygments==2.0.2
