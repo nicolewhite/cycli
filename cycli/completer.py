@@ -21,7 +21,7 @@ class CypherCompleter(Completer):
                 choices = reltypes
         elif self.most_recent_non_alpha(chars_before_cursor) == ".":
             choices = props
-        elif self.all_alpha(chars_before_cursor):
+        elif word:
             choices = cypher_words
         else:
             return
@@ -78,4 +78,4 @@ class CypherCompleter(Completer):
         return ""
 
     def all_alpha(self, chars):
-        return all([x.isalpha() or x.isspace() for x in chars])
+        return all([x.isalpha() or x.isspace() for x in chars]) and chars
