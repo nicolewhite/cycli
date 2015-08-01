@@ -21,7 +21,7 @@ def run():
         return [(Token.Prompt, "> ")]
 
     layout = create_default_layout(lexer=CypherLexer, get_prompt_tokens=get_tokens, reserve_space_for_menu=True)
-    buff = CypherBuffer(history=History(), completer=CypherCompleter, complete_while_typing=Always())
+    buff = CypherBuffer(history=History(), completer=CypherCompleter(), complete_while_typing=Always())
     application = Application(style=CypherStyle, buffer=buff, layout=layout, on_exit=AbortAction.RAISE_EXCEPTION)
     cli = CommandLineInterface(application=application, eventloop=create_eventloop())
 
@@ -40,7 +40,7 @@ def run():
 
             print result
 
-    except:
+    except Exception:
         print "Goodbye!"
 
 
