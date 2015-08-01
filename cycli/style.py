@@ -23,33 +23,3 @@ class CypherStyle(Style):
 
         Token.AfterInput: 'bg:#ff44ff #000000',
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
