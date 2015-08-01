@@ -52,8 +52,8 @@ class Cycli:
 
 
 @click.command()
-@click.option("-h", "--host", default="localhost")
-@click.option("-p", "--port", default="7474")
+@click.option("-h", "--host", default="localhost", help="The host address of Neo4j.")
+@click.option("-p", "--port", default="7474", help="The port number on which Neo4j is listening.")
 def run(host, port):
     print "~~~ Welcome to cycli! ~~~\n"
     cycli = Cycli(host, port)
