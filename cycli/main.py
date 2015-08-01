@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import sys
+
 from prompt_toolkit import Application, CommandLineInterface, AbortAction
 from prompt_toolkit.history import History
 from prompt_toolkit.shortcuts import create_default_layout, create_eventloop
@@ -7,11 +9,13 @@ from prompt_toolkit.filters import Always
 from pygments.token import Token
 import click
 
+from . import __version__
 from lexer import CypherLexer
 from style import CypherStyle
 from completer import CypherCompleter
 from buffer import CypherBuffer
 from neo4j import Neo4j
+
 
 def get_tokens(x):
         return [(Token.Prompt, "> ")]
@@ -58,8 +62,14 @@ class Cycli:
 @click.option("-p", "--port", default="7474", help="The port number on which Neo4j is listening.")
 @click.option("-u", "--username", default=False,
               help="Username for Neo4j authentication. If provided, you will be prompted for a password.")
-def run(host, port, username):
-    print "~~~ Welcome to cycli! ~~~\n"
+@click.option("-v", "--version", is_flag=True, help="Show cycli version and exit.")
+def run(host, port, username, version):
+    if version:
+        print "cycli {}".format(__version__)
+        sys.exit(0)
+
+    print "Version: {}".format(__version__)
+    print "Bug reports: https://github.com/nicolewhite/cycli/issues"
 
     password = None
 
