@@ -27,6 +27,8 @@ class CypherCompleter(Completer):
                 choices = self.relationship_types
         elif self.most_recent_non_alpha(chars_before_cursor) == ".":
             choices = self.properties
+        elif self.most_recent_non_alpha(chars_before_cursor) in ["\"", "'"]:
+            return
         elif word:
             choices = cypher_words
         else:
