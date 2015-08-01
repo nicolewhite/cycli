@@ -1,7 +1,7 @@
 # cycli
 A Command Line Interface for Cypher.
 
-![demo](gifs/output.gif)
+![demo](screenshots/output.gif)
 
 ## Install
 
