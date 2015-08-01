@@ -7,11 +7,17 @@ A Command Line Interface for Cypher.
 
 ```
 $ git clone https://github.com/nicolewhite/cycli.git
-$ python cycli/setup.py install
+$ sudo python cycli/setup.py install
 ```
 
 ## Usage
 
 ```
 $ cycli
+```
+
+## Options
+
+```
+$ cycli --help
 ```
