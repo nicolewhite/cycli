@@ -4,44 +4,60 @@ from prompt_toolkit import Application, CommandLineInterface, AbortAction
 from prompt_toolkit.history import History
 from prompt_toolkit.shortcuts import create_default_layout, create_eventloop
 from prompt_toolkit.filters import Always
-
 from pygments.token import Token
+import click
 
 from lexer import CypherLexer
 from style import CypherStyle
 from completer import CypherCompleter
 from buffer import CypherBuffer
-from neo4j import graph
+from neo4j import Neo4j
 
-
-def run():
-    print "~~~ Welcome to cycli! ~~~\n"
-
-    def get_tokens(x):
+def get_tokens(x):
         return [(Token.Prompt, "> ")]
 
-    layout = create_default_layout(lexer=CypherLexer, get_prompt_tokens=get_tokens, reserve_space_for_menu=True)
-    buff = CypherBuffer(history=History(), completer=CypherCompleter(), complete_while_typing=Always())
-    application = Application(style=CypherStyle, buffer=buff, layout=layout, on_exit=AbortAction.RAISE_EXCEPTION)
-    cli = CommandLineInterface(application=application, eventloop=create_eventloop())
+class Cycli:
 
-    try:
-        while True:
-            document = cli.run()
-            query = document.text
+    def __init__(self, host, port):
+        self.host = host
+        self.port = port
 
-            if query in ["quit", "exit"]:
-                raise Exception
+    def run(self):
+        neo4j = Neo4j(self.host, self.port)
 
-            try:
-                result = graph.cypher.execute(query)
-            except Exception as e:
-                result = e
+        labels = neo4j.labels()
+        relationship_types = neo4j.relationship_types()
+        properties = neo4j.properties()
 
-            print result
+        completer = CypherCompleter(labels, relationship_types, properties)
 
-    except Exception:
-        print "Goodbye!"
+        layout = create_default_layout(lexer=CypherLexer, get_prompt_tokens=get_tokens, reserve_space_for_menu=True)
+        buff = CypherBuffer(history=History(), completer=completer, complete_while_typing=Always())
+        application = Application(style=CypherStyle, buffer=buff, layout=layout, on_exit=AbortAction.RAISE_EXCEPTION)
+        cli = CommandLineInterface(application=application, eventloop=create_eventloop())
+
+        try:
+            while True:
+                document = cli.run()
+                query = document.text
+
+                if query in ["quit", "exit"]:
+                    raise Exception
+
+                results = neo4j.cypher(query)
+                print results
+
+        except Exception:
+            print "Goodbye!"
+
+
+@click.command()
+@click.option("-h", "--host", default="localhost")
+@click.option("-p", "--port", default="7474")
+def run(host, port):
+    print "~~~ Welcome to cycli! ~~~\n"
+    cycli = Cycli(host, port)
+    cycli.run()
 
 
 if __name__ == '__main__':

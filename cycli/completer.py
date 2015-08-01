@@ -1,10 +1,16 @@
 from __future__ import unicode_literals
 from prompt_toolkit.completion import Completer, Completion
-from neo4j import reltypes, labels, props
 from cypher import cypher_words
 
 
 class CypherCompleter(Completer):
+
+    def __init__(self, labels, relationship_types, properties):
+        super(CypherCompleter, self).__init__()
+
+        self.labels = labels
+        self.relationship_types = relationship_types
+        self.properties = properties
 
     def get_completions(self, document, complete_event):
         chars_before_cursor = document.get_word_before_cursor(WORD=True)
@@ -16,11 +22,11 @@ class CypherCompleter(Completer):
 
         if self.most_recent_non_alpha(chars_before_cursor) == ":":
             if self.looking_for_label(chars_before_cursor):
-                choices = labels
+                choices = self.labels
             else:
-                choices = reltypes
+                choices = self.relationship_types
         elif self.most_recent_non_alpha(chars_before_cursor) == ".":
-            choices = props
+            choices = self.properties
         elif word:
             choices = cypher_words
         else:
