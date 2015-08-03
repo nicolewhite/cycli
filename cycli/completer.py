@@ -62,9 +62,9 @@ class CypherCompleter(Completer):
 
         return completions
 
-    def looking_for_label(self, word_before_cursor):
-        paren = word_before_cursor.rfind("(")
-        bracket = word_before_cursor.rfind("[")
+    def looking_for_label(self, chars_before_cursor):
+        paren = chars_before_cursor.rfind("(")
+        bracket = chars_before_cursor.rfind("[")
 
         if paren > bracket:
             return True
