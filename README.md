@@ -9,7 +9,7 @@ A Command Line Interface for Neo4j's Cypher Query Language.
 $ pip install cycli
 ```
 
-## Usage
+## Start
 
 To start, simply execute `cycli` from your shell.
 
@@ -56,15 +56,17 @@ available in the Neo4j browser.
 
 ![syntax](screenshots/syntax-highlight.png)
 
-## Execute Queries
+## Usage
+
+### Execute Queries
 
 Execute queries by ending them with a semicolon and pressing enter or by pressing enter twice.
 
-## Keyboard Interrupts
+### Keyboard Interrupts
 
-Keyboard interrupts in `cycli` behave much like keyboard interrupts in the Python REPL. CTRL+C will clear your current
+Keyboard interrupts in cycli behave much like keyboard interrupts in the Python REPL. CTRL+C will clear your current
 input and CTRL+D will exit the CLI if your current input is empty.
 
-## Exiting
+### Exiting
 
-Exit `cycli` by typing "quit" or "exit" or by pressing CTRL+D on an empty line.
+Exit cycli by typing "quit" or "exit" or by pressing CTRL+D on an empty line.
