@@ -1,0 +1,5 @@
+install:
+	python setup.py install
+
+clean:
+	rm -rf build dist cycli.egg-info
