@@ -1,4 +1,4 @@
-install:
+install: clean
 	python setup.py install
 
 clean:
