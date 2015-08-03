@@ -6,8 +6,11 @@ from prompt_toolkit import Application, CommandLineInterface, AbortAction
 from prompt_toolkit.history import History
 from prompt_toolkit.shortcuts import create_default_layout, create_eventloop
 from prompt_toolkit.filters import Always
+
 from pygments.token import Token
 import click
+from py2neo.error import Unauthorized
+from py2neo.packages.httpstream import SocketError
 
 from . import __version__
 from lexer import CypherLexer
@@ -31,9 +34,18 @@ class Cycli:
     def run(self):
         neo4j = Neo4j(self.host, self.port, self.username, self.password)
 
-        labels = neo4j.labels()
-        relationship_types = neo4j.relationship_types()
-        properties = neo4j.properties()
+        try:
+            labels = neo4j.labels()
+            relationship_types = neo4j.relationship_types()
+            properties = neo4j.properties()
+
+        except Unauthorized:
+            print "Unauthorized. See cycli --help for authorization instructions."
+            return
+
+        except SocketError:
+            print "Connection refused. Is Neo4j turned on?"
+            return
 
         completer = CypherCompleter(labels, relationship_types, properties)
 
@@ -85,7 +97,7 @@ def run(host, port, username, version):
         sys.exit(0)
 
     print "Version: {}".format(__version__)
-    print "Bug reports: https://github.com/nicolewhite/cycli/issues"
+    print "Bug reports: https://github.com/nicolewhite/cycli/issues\n"
 
     password = None
 
