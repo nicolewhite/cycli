@@ -28,7 +28,16 @@ class CypherCompleter(Completer):
             else:
                 choices = self.relationship_types
         elif self.most_recent_non_alpha(chars_before_cursor) == ".":
-            choices = self.properties
+            loc = chars_before_cursor.find(".")
+
+            if loc:
+                prev_char = chars_before_cursor[loc - 1]
+
+                if prev_char.isalpha():
+                    choices = self.properties
+
+                else:
+                    return
         elif self.unclosed_strings(all_text):
             return
         elif word:
