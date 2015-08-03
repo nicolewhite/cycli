@@ -16,7 +16,8 @@ class CypherBuffer(Buffer):
         return any(
             [
                 text.endswith(";"),
+                text.endswith("\n"),
                 text == "quit",
-                text == "exit"
+                text == "exit",
             ]
         )
