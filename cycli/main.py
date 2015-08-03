@@ -37,9 +37,25 @@ class Cycli:
 
         completer = CypherCompleter(labels, relationship_types, properties)
 
-        layout = create_default_layout(lexer=CypherLexer, get_prompt_tokens=get_tokens, reserve_space_for_menu=True)
-        buff = CypherBuffer(history=History(), completer=completer, complete_while_typing=Always())
-        application = Application(style=CypherStyle, buffer=buff, layout=layout, on_exit=AbortAction.RAISE_EXCEPTION)
+        layout = create_default_layout(
+            lexer=CypherLexer,
+            get_prompt_tokens=get_tokens,
+            reserve_space_for_menu=True
+        )
+
+        buff = CypherBuffer(
+            history=History(),
+            completer=completer,
+            complete_while_typing=Always()
+        )
+
+        application = Application(
+            style=CypherStyle,
+            buffer=buff,
+            layout=layout,
+            on_exit=AbortAction.RAISE_EXCEPTION
+        )
+
         cli = CommandLineInterface(application=application, eventloop=create_eventloop())
 
         try:
