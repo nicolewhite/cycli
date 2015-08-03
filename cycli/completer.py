@@ -15,6 +15,8 @@ class CypherCompleter(Completer):
     def get_completions(self, document, complete_event):
         chars_before_cursor = document.get_word_before_cursor(WORD=True)
 
+        all_text = document.text_before_cursor
+
         if not chars_before_cursor:
             return
 
@@ -27,7 +29,7 @@ class CypherCompleter(Completer):
                 choices = self.relationship_types
         elif self.most_recent_non_alpha(chars_before_cursor) == ".":
             choices = self.properties
-        elif self.most_recent_non_alpha(chars_before_cursor) in ["\"", "'"]:
+        elif self.unclosed_strings(all_text):
             return
         elif word:
             choices = cypher_words
@@ -85,5 +87,5 @@ class CypherCompleter(Completer):
 
         return ""
 
-    def all_alpha(self, chars):
-        return all([x.isalpha() or x.isspace() for x in chars]) and chars
+    def unclosed_strings(self, chars):
+        return chars.count("\"") % 2 != 0 or chars.count("'") % 2 != 0
