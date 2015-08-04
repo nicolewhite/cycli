@@ -12,12 +12,12 @@ import click
 from py2neo.error import Unauthorized
 from py2neo.packages.httpstream import SocketError
 
-from . import __version__
-from lexer import CypherLexer
-from style import CypherStyle
-from completer import CypherCompleter
-from buffer import CypherBuffer
-from neo4j import Neo4j
+from cycli import __version__
+from cycli.lexer import CypherLexer
+from cycli.style import CypherStyle
+from cycli.completer import CypherCompleter
+from cycli.buffer import CypherBuffer
+from cycli.neo4j import Neo4j
 
 
 def get_tokens(x):

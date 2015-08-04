@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 from prompt_toolkit.completion import Completer, Completion
-from cypher import cypher_words
+from cycli.cypher import cypher_words
 
 
 class CypherCompleter(Completer):
