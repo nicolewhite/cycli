@@ -70,3 +70,8 @@ input and CTRL+D will exit the CLI if your current input is empty.
 ### Exiting
 
 Exit cycli by typing "quit" or "exit" or by pressing CTRL+D on an empty line.
+
+## Credits
+
+This project depends heavily on [python-prompt-toolkit](https://github.com/jonathanslenders/python-prompt-toolkit) and
+[py2neo](https://github.com/nigelsmall/py2neo).
