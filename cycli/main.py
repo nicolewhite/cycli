@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+from __future__ import unicode_literals, print_function
 
 import sys
 
@@ -40,11 +40,11 @@ class Cycli:
             properties = neo4j.properties()
 
         except Unauthorized:
-            print "Unauthorized. See cycli --help for authorization instructions."
+            print("Unauthorized. See cycli --help for authorization instructions.")
             return
 
         except SocketError:
-            print "Connection refused. Is Neo4j turned on?"
+            print("Connection refused. Is Neo4j turned on?")
             return
 
         completer = CypherCompleter(labels, relationship_types, properties)
@@ -79,10 +79,10 @@ class Cycli:
                     raise Exception
 
                 results = neo4j.cypher(query)
-                print results
+                print(results)
 
         except Exception:
-            print "Goodbye!"
+            print("Goodbye!")
 
 
 @click.command()
@@ -93,11 +93,11 @@ class Cycli:
 @click.option("-v", "--version", is_flag=True, help="Show cycli version and exit.")
 def run(host, port, username, version):
     if version:
-        print "cycli {}".format(__version__)
+        print("cycli {}".format(__version__))
         sys.exit(0)
 
-    print "Version: {}".format(__version__)
-    print "Bug reports: https://github.com/nicolewhite/cycli/issues\n"
+    print("Version: {}".format(__version__))
+    print("Bug reports: https://github.com/nicolewhite/cycli/issues\n")
 
     password = None
 
