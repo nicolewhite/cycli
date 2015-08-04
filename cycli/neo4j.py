@@ -29,13 +29,13 @@ class Neo4j:
         return results
 
     def labels(self):
-        return list(self.connection().node_labels)
+        return sorted(list(self.connection().node_labels))
 
     def relationship_types(self):
-        return list(self.connection().relationship_types)
+        return sorted(list(self.connection().relationship_types))
 
     def properties(self):
         url = self.url + "propertykeys"
         r = requests.get(url, auth=(self.username, self.password))
         props = r.json()
-        return props
+        return sorted(props)

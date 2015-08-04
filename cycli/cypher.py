@@ -7,3 +7,4 @@ PREDS = [x.upper() for x in PREDS]
 KEYWORDS = [x.upper() for x in KEYWORDS]
 
 cypher_words = FUNCS + PREDS + KEYWORDS
+cypher_words = sorted(cypher_words)
