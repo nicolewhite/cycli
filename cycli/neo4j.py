@@ -21,10 +21,16 @@ class Neo4j:
         return graph
 
     def cypher(self, query):
+        tx = self.connection().cypher.begin()
+
         try:
-            results = self.connection().cypher.execute(query)
+            tx.append(query)
+            results = tx.process()
         except Exception as e:
             results = e
+        except KeyboardInterrupt:
+            tx.rollback()
+            results = ""
 
         return results
 

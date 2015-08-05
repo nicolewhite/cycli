@@ -62,14 +62,13 @@ available in the Neo4j browser.
 
 Execute queries by ending them with a semicolon and pressing enter or by pressing enter twice.
 
-### Keyboard Interrupts
+### Abort Queries
 
-Keyboard interrupts in cycli behave much like keyboard interrupts in the Python REPL. CTRL+C will clear your current
-input and CTRL+D will exit the CLI if your current input is empty.
+While a query is executing, CTRL-C will abort the query and rollback the transaction.
 
 ### Exiting
 
-Exit cycli by typing "quit" or "exit" or by pressing CTRL+D on an empty line.
+Exit cycli by typing "quit" or "exit" or by pressing CTRL-D on an empty line.
 
 ## Credits
 
