@@ -78,8 +78,12 @@ class Cycli:
                 if query in ["quit", "exit"]:
                     raise Exception
 
-                results = neo4j.cypher(query)
-                print(results)
+                elif query == "help":
+                    print(help_text())
+
+                else:
+                    results = neo4j.cypher(query)
+                    print(results)
 
         except Exception:
             print("Goodbye!")
@@ -106,6 +110,29 @@ def run(host, port, username, version):
 
     cycli = Cycli(host, port, username, password)
     cycli.run()
+
+
+def help_text():
+    options = {
+        "quit": "Exit cycli.",
+        "exit": "Exit cycli.",
+        "help": "Display this text.",
+        "CTRL-D": "Exit cycli if the input is blank.",
+        "CTRL-C": "Abort and rollback the currently-running query."
+    }
+
+    keyword_column_size = max([len("keyword")] + [len(key) for key in options.keys()])
+    description_column_size = max([len("description")] + [len(descrip) for descrip in options.values()])
+
+    header = " | " + " | ".join(["keyword".ljust(keyword_column_size), "description".ljust(description_column_size)]) + " | \n"
+    divider = " | " +  "-" * keyword_column_size + " | " + "-" * description_column_size + " | \n"
+
+    text = ""
+
+    for key, value in options.items():
+        text += " | " + " | ".join([key.ljust(keyword_column_size), value.ljust(description_column_size)]) + " | \n"
+
+    return header + divider + text
 
 
 if __name__ == '__main__':
