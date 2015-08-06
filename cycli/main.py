@@ -1,16 +1,16 @@
 from __future__ import unicode_literals, print_function
 
 import sys
+import click
 
 from prompt_toolkit import Application, CommandLineInterface, AbortAction
 from prompt_toolkit.history import History
 from prompt_toolkit.shortcuts import create_default_layout, create_eventloop
 from prompt_toolkit.filters import Always
-
 from pygments.token import Token
-import click
+
 from py2neo.error import Unauthorized
-from py2neo.packages.httpstream import SocketError
+from py2neo.packages.httpstream import SocketError, http
 
 from cycli import __version__
 from cycli.lexer import CypherLexer
@@ -95,7 +95,8 @@ class Cycli:
 @click.option("-u", "--username", default=False,
               help="Username for Neo4j authentication. If provided, you will be prompted for a password.")
 @click.option("-v", "--version", is_flag=True, help="Show cycli version and exit.")
-def run(host, port, username, version):
+@click.option("-t", "--timeout", default=False, help="Set a global socket timeout for queries.", type=click.INT)
+def run(host, port, username, version, timeout):
     if version:
         print("cycli {}".format(__version__))
         sys.exit(0)
@@ -107,6 +108,9 @@ def run(host, port, username, version):
 
     if username:
         password = click.prompt("Password", hide_input=True, show_default=False, type=str)
+
+    if timeout:
+        http.socket_timeout = timeout
 
     cycli = Cycli(host, port, username, password)
     cycli.run()
