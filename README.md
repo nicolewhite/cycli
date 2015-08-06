@@ -11,7 +11,7 @@ $ pip install cycli
 
 ## Start
 
-To start, simply execute `cycli` from your shell.
+To start, simply execute `cycli` from your terminal.
 
 ```
 $ cycli
@@ -65,6 +65,12 @@ Execute queries by ending them with a semicolon and pressing enter or by pressin
 ### Abort Queries
 
 While a query is executing, CTRL-C will abort the query and rollback the transaction.
+
+### Get Help
+
+Type "help" to see a table of keywords / keystrokes and their descriptions.
+
+![help](screenshots/help.png)
 
 ### Exiting
 
