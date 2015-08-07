@@ -5,8 +5,17 @@ A Command Line Interface for Neo4j's Cypher Query Language.
 
 ## Install
 
+### Stable Release from PyPI
+
 ```
 $ pip install cycli
+```
+
+### Latest Development Release
+
+```
+$ git clone https://github.com/nicolewhite/cycli.git
+$ sudo python cycli/setup.py install
 ```
 
 ## Start
