@@ -26,6 +26,7 @@ class Neo4j:
         try:
             tx.append(query)
             results = tx.process()
+            tx.commit()
         except Exception as e:
             results = e
         except KeyboardInterrupt:
