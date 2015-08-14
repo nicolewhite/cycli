@@ -23,10 +23,12 @@ class CypherCompleter(Completer):
         word = self.find_last_word(chars_before_cursor)
 
         if self.most_recent_non_alpha(chars_before_cursor) == ":":
-            if self.looking_for_label(chars_before_cursor):
+            if self.looking_for(chars_before_cursor) == "label":
                 choices = self.labels
-            else:
+            elif self.looking_for(chars_before_cursor) == "relationship":
                 choices = self.relationship_types
+            else:
+                return
         elif self.most_recent_non_alpha(chars_before_cursor) == ".":
             loc = chars_before_cursor.find(".")
 
@@ -62,14 +64,13 @@ class CypherCompleter(Completer):
 
         return completions
 
-    def looking_for_label(self, chars_before_cursor):
+    def looking_for(self, chars_before_cursor):
         paren = chars_before_cursor.rfind("(")
         bracket = chars_before_cursor.rfind("[")
+        curly = chars_before_cursor.rfind("{")
 
-        if paren > bracket:
-            return True
-
-        return False
+        d = dict(label=paren, relationship=bracket, curly=curly)
+        return max(d, key=d.get)
 
     def find_last_word(self, chars):
         chars = list(chars)
