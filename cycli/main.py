@@ -1,5 +1,7 @@
 from __future__ import unicode_literals, print_function
 
+from datetime import datetime
+
 import sys
 import click
 
@@ -25,11 +27,12 @@ def get_tokens(x):
 
 class Cycli:
 
-    def __init__(self, host, port, username, password):
+    def __init__(self, host, port, username, password, logfile):
         self.host = host
         self.port = port
         self.username = username
         self.password = password
+        self.logfile = logfile
 
     def run(self):
         neo4j = Neo4j(self.host, self.port, self.username, self.password)
@@ -85,6 +88,11 @@ class Cycli:
                     results = neo4j.cypher(query)
                     print(results)
 
+                    if self.logfile:
+                        self.logfile.write("\n{}\n".format(datetime.now()))
+                        self.logfile.write("\n{}\n".format(query))
+                        self.logfile.write("\n{}\n".format(results))
+
         except Exception:
             print("Goodbye!")
 
@@ -97,7 +105,9 @@ class Cycli:
 @click.option("-v", "--version", is_flag=True, help="Show cycli version and exit.")
 @click.option("-t", "--timeout", default=False, help="Set a global socket timeout for queries.", type=click.INT)
 @click.option("-p", "--password", default=False, help="Password for Neo4j authentication.")
-def run(host, port, username, version, timeout, password):
+@click.option('-l', '--logfile', type=click.File(mode="a", encoding="utf-8"),
+              help="Log every query and its results to a file.")
+def run(host, port, username, version, timeout, password, logfile):
     if version:
         print("cycli {}".format(__version__))
         sys.exit(0)
@@ -111,7 +121,7 @@ def run(host, port, username, version, timeout, password):
     if timeout:
         http.socket_timeout = timeout
 
-    cycli = Cycli(host, port, username, password)
+    cycli = Cycli(host, port, username, password, logfile)
     cycli.run()
 
 
