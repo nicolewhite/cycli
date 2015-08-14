@@ -27,12 +27,13 @@ def get_tokens(x):
 
 class Cycli:
 
-    def __init__(self, host, port, username, password, logfile):
+    def __init__(self, host, port, username, password, logfile, filename):
         self.host = host
         self.port = port
         self.username = username
         self.password = password
         self.logfile = logfile
+        self.filename = filename
 
     def run(self):
         neo4j = Neo4j(self.host, self.port, self.username, self.password)
@@ -48,6 +49,17 @@ class Cycli:
 
         except SocketError:
             print("Connection refused. Is Neo4j turned on?")
+            return
+
+        if self.filename:
+            queries = self.filename.read()
+            queries = queries.split(";")[:-1]
+
+            for query in queries:
+                print("{};\n".format(query))
+                results = neo4j.cypher(query)
+                print(results)
+
             return
 
         completer = CypherCompleter(labels, relationship_types, properties)
@@ -107,7 +119,9 @@ class Cycli:
 @click.option("-p", "--password", default=False, help="Password for Neo4j authentication.")
 @click.option('-l', '--logfile', type=click.File(mode="a", encoding="utf-8"),
               help="Log every query and its results to a file.")
-def run(host, port, username, version, timeout, password, logfile):
+@click.option("-f", "--filename", type=click.File(mode="rb"),
+              help="Execute semicolon separated Cypher queries from a file.")
+def run(host, port, username, version, timeout, password, logfile, filename):
     if version:
         print("cycli {}".format(__version__))
         sys.exit(0)
@@ -121,7 +135,7 @@ def run(host, port, username, version, timeout, password, logfile):
     if timeout:
         http.socket_timeout = timeout
 
-    cycli = Cycli(host, port, username, password, logfile)
+    cycli = Cycli(host, port, username, password, logfile, filename)
     cycli.run()
 
 
