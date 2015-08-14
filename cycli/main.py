@@ -91,12 +91,13 @@ class Cycli:
 
 @click.command()
 @click.option("-h", "--host", default="localhost", help="The host address of Neo4j.")
-@click.option("-p", "--port", default="7474", help="The port number on which Neo4j is listening.")
+@click.option("-P", "--port", default="7474", help="The port number on which Neo4j is listening.")
 @click.option("-u", "--username", default=False,
               help="Username for Neo4j authentication. If provided, you will be prompted for a password.")
 @click.option("-v", "--version", is_flag=True, help="Show cycli version and exit.")
 @click.option("-t", "--timeout", default=False, help="Set a global socket timeout for queries.", type=click.INT)
-def run(host, port, username, version, timeout):
+@click.option("-p", "--password", default=False, help="Password for Neo4j authentication.")
+def run(host, port, username, version, timeout, password):
     if version:
         print("cycli {}".format(__version__))
         sys.exit(0)
@@ -104,9 +105,7 @@ def run(host, port, username, version, timeout):
     print("Version: {}".format(__version__))
     print("Bug reports: https://github.com/nicolewhite/cycli/issues\n")
 
-    password = None
-
-    if username:
+    if username and not password:
         password = click.prompt("Password", hide_input=True, show_default=False, type=str)
 
     if timeout:
