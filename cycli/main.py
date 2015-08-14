@@ -120,7 +120,7 @@ class Cycli:
 @click.option('-l', '--logfile', type=click.File(mode="a", encoding="utf-8"),
               help="Log every query and its results to a file.")
 @click.option("-f", "--filename", type=click.File(mode="rb"),
-              help="Execute semicolon separated Cypher queries from a file.")
+              help="Execute semicolon-separated Cypher queries from a file.")
 def run(host, port, username, version, timeout, password, logfile, filename):
     if version:
         print("cycli {}".format(__version__))
