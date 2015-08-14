@@ -1,4 +1,4 @@
-from __future__ import unicode_literals, print_function
+from __future__ import unicode_literals
 
 from datetime import datetime
 
@@ -45,11 +45,11 @@ class Cycli:
             properties = neo4j.properties()
 
         except Unauthorized:
-            print("Unauthorized. See cycli --help for authorization instructions.")
+            click.echo("Unauthorized. See cycli --help for authorization instructions.")
             return
 
         except SocketError:
-            print("Connection refused. Is Neo4j turned on?")
+            click.echo("Connection refused. Is Neo4j turned on?")
             return
 
         if self.filename:
@@ -57,9 +57,9 @@ class Cycli:
             queries = queries.split(";")[:-1]
 
             for query in queries:
-                print("{};\n".format(query))
+                click.echo("{};\n".format(query))
                 results = neo4j.cypher(query)
-                print(results)
+                click.echo(results)
 
             return
 
@@ -105,11 +105,11 @@ class Cycli:
                     raise Exception
 
                 elif query == "help":
-                    print(help_text())
+                    click.echo(help_text())
 
                 else:
                     results = neo4j.cypher(query)
-                    print(results)
+                    click.echo(results)
 
                     if self.logfile:
                         self.logfile.write("\n{}\n".format(datetime.now()))
@@ -117,7 +117,7 @@ class Cycli:
                         self.logfile.write("\n{}\n".format(results))
 
         except Exception:
-            print("Goodbye!")
+            click.echo("Goodbye!")
 
 
 @click.command()
@@ -134,7 +134,7 @@ class Cycli:
               help="Execute semicolon-separated Cypher queries from a file.")
 def run(host, port, username, version, timeout, password, logfile, filename):
     if version:
-        print("cycli {}".format(__version__))
+        click.echo("cycli {}".format(__version__))
         sys.exit(0)
 
     if username and not password:
