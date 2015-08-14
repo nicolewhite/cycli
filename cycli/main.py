@@ -63,8 +63,14 @@ class Cycli:
 
             return
 
-        print("Version: {}".format(__version__))
-        print("Bug reports: https://github.com/nicolewhite/cycli/issues\n")
+        click.secho(" ______     __  __     ______     __         __    ", fg="red")
+        click.secho("/\  ___\   /\ \_\ \   /\  ___\   /\ \       /\ \   ", fg="yellow")
+        click.secho("\ \ \____  \ \____ \  \ \ \____  \ \ \____  \ \ \  ", fg="green")
+        click.secho(" \ \_____\  \/\_____\  \ \_____\  \ \_____\  \ \_\ ", fg="blue")
+        click.secho("  \/_____/   \/_____/   \/_____/   \/_____/   \/_/ ", fg="magenta")
+
+        click.echo("\nVersion: {}".format(__version__))
+        click.echo("Bug reports: https://github.com/nicolewhite/cycli/issues\n")
 
         completer = CypherCompleter(labels, relationship_types, properties)
 
