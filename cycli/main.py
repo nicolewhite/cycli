@@ -62,6 +62,9 @@ class Cycli:
 
             return
 
+        print("Version: {}".format(__version__))
+        print("Bug reports: https://github.com/nicolewhite/cycli/issues\n")
+
         completer = CypherCompleter(labels, relationship_types, properties)
 
         layout = create_default_layout(
@@ -125,9 +128,6 @@ def run(host, port, username, version, timeout, password, logfile, filename):
     if version:
         print("cycli {}".format(__version__))
         sys.exit(0)
-
-    print("Version: {}".format(__version__))
-    print("Bug reports: https://github.com/nicolewhite/cycli/issues\n")
 
     if username and not password:
         password = click.prompt("Password", hide_input=True, show_default=False, type=str)
