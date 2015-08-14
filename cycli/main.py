@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+from __future__ import unicode_literals, print_function
 
 from datetime import datetime
 
@@ -45,11 +45,11 @@ class Cycli:
             properties = neo4j.properties()
 
         except Unauthorized:
-            click.echo("Unauthorized. See cycli --help for authorization instructions.")
+            print("Unauthorized. See cycli --help for authorization instructions.")
             return
 
         except SocketError:
-            click.echo("Connection refused. Is Neo4j turned on?")
+            print("Connection refused. Is Neo4j turned on?")
             return
 
         if self.filename:
@@ -57,9 +57,9 @@ class Cycli:
             queries = queries.split(";")[:-1]
 
             for query in queries:
-                click.echo("{};\n".format(query))
+                print("{};\n".format(query))
                 results = neo4j.cypher(query)
-                click.echo(results)
+                print(results)
 
             return
 
@@ -69,8 +69,8 @@ class Cycli:
         click.secho(" \ \_____\  \/\_____\  \ \_____\  \ \_____\  \ \_\ ", fg="blue")
         click.secho("  \/_____/   \/_____/   \/_____/   \/_____/   \/_/ ", fg="magenta")
 
-        click.echo("\nVersion: {}".format(__version__))
-        click.echo("Bug reports: https://github.com/nicolewhite/cycli/issues\n")
+        print("\nVersion: {}".format(__version__))
+        print("Bug reports: https://github.com/nicolewhite/cycli/issues\n")
 
         completer = CypherCompleter(labels, relationship_types, properties)
 
@@ -105,11 +105,11 @@ class Cycli:
                     raise Exception
 
                 elif query == "help":
-                    click.echo(help_text())
+                    print(help_text())
 
                 else:
                     results = neo4j.cypher(query)
-                    click.echo(results)
+                    print(results)
 
                     if self.logfile:
                         self.logfile.write("\n{}\n".format(datetime.now()))
@@ -117,7 +117,7 @@ class Cycli:
                         self.logfile.write("\n{}\n".format(results))
 
         except Exception:
-            click.echo("Goodbye!")
+            print("Goodbye!")
 
 
 @click.command()
@@ -134,7 +134,7 @@ class Cycli:
               help="Execute semicolon-separated Cypher queries from a file.")
 def run(host, port, username, version, timeout, password, logfile, filename):
     if version:
-        click.echo("cycli {}".format(__version__))
+        print("cycli {}".format(__version__))
         sys.exit(0)
 
     if username and not password:
