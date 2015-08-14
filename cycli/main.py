@@ -19,6 +19,7 @@ from cycli.lexer import CypherLexer
 from cycli.style import CypherStyle
 from cycli.completer import CypherCompleter
 from cycli.buffer import CypherBuffer
+from cycli.binder import CypherBinder
 from cycli.neo4j import Neo4j
 
 
@@ -83,7 +84,8 @@ class Cycli:
             style=CypherStyle,
             buffer=buff,
             layout=layout,
-            on_exit=AbortAction.RAISE_EXCEPTION
+            on_exit=AbortAction.RAISE_EXCEPTION,
+            key_bindings_registry=CypherBinder.registry
         )
 
         cli = CommandLineInterface(application=application, eventloop=create_eventloop())
