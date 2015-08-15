@@ -63,6 +63,8 @@ class Cycli:
 
             for query in queries:
                 query += ";"
+                query = query.strip()
+
                 results = neo4j.cypher(query)
 
                 print("{}\n".format(query))
