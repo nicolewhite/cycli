@@ -28,13 +28,14 @@ def get_tokens(x):
 
 class Cycli:
 
-    def __init__(self, host, port, username, password, logfile, filename):
+    def __init__(self, host, port, username, password, logfile, filename, ssl):
         self.host = host
         self.port = port
         self.username = username
         self.password = password
         self.logfile = logfile
         self.filename = filename
+        self.ssl = ssl
 
     def write_to_logfile(self, query, results):
         self.logfile.write("{}\n".format(datetime.now()))
@@ -42,7 +43,7 @@ class Cycli:
         self.logfile.write("\n{}\n".format(results))
 
     def run(self):
-        neo4j = Neo4j(self.host, self.port, self.username, self.password)
+        neo4j = Neo4j(self.host, self.port, self.username, self.password, self.ssl)
 
         try:
             labels = neo4j.labels()
@@ -139,7 +140,8 @@ class Cycli:
 @click.option("-t", "--timeout", help="Set a global socket timeout for queries.", type=click.INT)
 @click.option('-l', '--logfile', type=click.File(mode="a", encoding="utf-8"), help="Log every query and its results to a file.")
 @click.option("-f", "--filename", type=click.File(mode="rb"), help="Execute semicolon-separated Cypher queries from a file.")
-def run(host, port, username, version, timeout, password, logfile, filename):
+@click.option("-s", "--ssl", is_flag=True, help="Use the HTTPS protocol.")
+def run(host, port, username, version, timeout, password, logfile, filename, ssl):
     if version:
         print("cycli {}".format(__version__))
         sys.exit(0)
@@ -150,7 +152,7 @@ def run(host, port, username, version, timeout, password, logfile, filename):
     if timeout:
         http.socket_timeout = timeout
 
-    cycli = Cycli(host, port, username, password, logfile, filename)
+    cycli = Cycli(host, port, username, password, logfile, filename, ssl)
     cycli.run()
 
 
