@@ -36,6 +36,11 @@ class Cycli:
         self.logfile = logfile
         self.filename = filename
 
+    def write_to_logfile(self, query, results):
+        self.logfile.write("{}\n".format(datetime.now()))
+        self.logfile.write("\n{}\n".format(query))
+        self.logfile.write("\n{}\n".format(results))
+
     def run(self):
         neo4j = Neo4j(self.host, self.port, self.username, self.password)
 
@@ -57,9 +62,14 @@ class Cycli:
             queries = queries.split(";")[:-1]
 
             for query in queries:
-                print("{};\n".format(query))
+                query += ";"
                 results = neo4j.cypher(query)
+
+                print("{}\n".format(query))
                 print(results)
+
+                if self.logfile:
+                    self.write_to_logfile(query, results)
 
             return
 
@@ -112,9 +122,7 @@ class Cycli:
                     print(results)
 
                     if self.logfile:
-                        self.logfile.write("\n{}\n".format(datetime.now()))
-                        self.logfile.write("\n{}\n".format(query))
-                        self.logfile.write("\n{}\n".format(results))
+                        self.write_to_logfile(query, results)
 
         except Exception:
             print("Goodbye!")
