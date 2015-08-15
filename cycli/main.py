@@ -134,7 +134,7 @@ class Cycli:
 @click.option("-v", "--version", is_flag=True, help="Show cycli version and exit.")
 @click.option("-h", "--host", default="localhost", help="The host address of Neo4j.")
 @click.option("-P", "--port", default="7474", help="The port number on which Neo4j is listening.")
-@click.option("-u", "--username", help="Username for Neo4j authentication. If provided, you will be prompted for a password.")
+@click.option("-u", "--username", help="Username for Neo4j authentication.")
 @click.option("-p", "--password", help="Password for Neo4j authentication.")
 @click.option("-t", "--timeout", help="Set a global socket timeout for queries.", type=click.INT)
 @click.option('-l', '--logfile', type=click.File(mode="a", encoding="utf-8"), help="Log every query and its results to a file.")
