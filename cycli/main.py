@@ -131,17 +131,14 @@ class Cycli:
 
 
 @click.command()
+@click.option("-v", "--version", is_flag=True, help="Show cycli version and exit.")
 @click.option("-h", "--host", default="localhost", help="The host address of Neo4j.")
 @click.option("-P", "--port", default="7474", help="The port number on which Neo4j is listening.")
-@click.option("-u", "--username", default=False,
-              help="Username for Neo4j authentication. If provided, you will be prompted for a password.")
-@click.option("-v", "--version", is_flag=True, help="Show cycli version and exit.")
-@click.option("-t", "--timeout", default=False, help="Set a global socket timeout for queries.", type=click.INT)
-@click.option("-p", "--password", default=False, help="Password for Neo4j authentication.")
-@click.option('-l', '--logfile', type=click.File(mode="a", encoding="utf-8"),
-              help="Log every query and its results to a file.")
-@click.option("-f", "--filename", type=click.File(mode="rb"),
-              help="Execute semicolon-separated Cypher queries from a file.")
+@click.option("-u", "--username", help="Username for Neo4j authentication. If provided, you will be prompted for a password.")
+@click.option("-p", "--password", help="Password for Neo4j authentication.")
+@click.option("-t", "--timeout", help="Set a global socket timeout for queries.", type=click.INT)
+@click.option('-l', '--logfile', type=click.File(mode="a", encoding="utf-8"), help="Log every query and its results to a file.")
+@click.option("-f", "--filename", type=click.File(mode="rb"), help="Execute semicolon-separated Cypher queries from a file.")
 def run(host, port, username, version, timeout, password, logfile, filename):
     if version:
         print("cycli {}".format(__version__))
