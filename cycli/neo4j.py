@@ -5,11 +5,14 @@ from py2neo import Graph, authenticate
 class Neo4j:
 
     def __init__(self, host, port, username=None, password=None):
+        self.host = host
+        self.port = port
         self.username = username
         self.password = password
 
+        self.protocol = "https://" if ssl else "http://"
         self.host_port = "{host}:{port}".format(host=host, port=port)
-        self.url = "http://{host_port}/db/data/".format(host_port=self.host_port)
+        self.url = "{protocol}{host_port}/db/data/".format(protocol=self.protocol, host_port=self.host_port)
 
     def connection(self):
         if self.username and self.password:
