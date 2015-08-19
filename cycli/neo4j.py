@@ -4,7 +4,7 @@ from py2neo import Graph, authenticate
 
 class Neo4j:
 
-    def __init__(self, host, port, username=None, password=None, ssl=False):
+    def __init__(self, host, port, username=None, password=None):
         self.host = host
         self.port = port
         self.username = username

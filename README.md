@@ -5,17 +5,8 @@ A Command Line Interface for Neo4j's Cypher Query Language.
 
 ## Install
 
-### Stable Release from PyPI
-
 ```
 $ pip install cycli
-```
-
-### Latest Development Release
-
-```
-$ git clone https://github.com/nicolewhite/cycli.git
-$ sudo python cycli/setup.py install
 ```
 
 ## Start
@@ -33,6 +24,17 @@ $ cycli -u username
 ```
 
 You will then be prompted to enter your password. For more options, execute `cycli --help`.
+
+## Options
+
+* `-v`, `--version`: Show cycli version and exit.
+* `-h`, `--host`: The host address of Neo4j.
+* `-P`, `--port`: The port number on which Neo4j is listening.
+* `-u`, `--username`: Username for Neo4j authentication.
+* `-p`, `--password`: Password for Neo4j authentication.
+* `-t`, `--timeout`: Set a global socket timeout for queries.
+* `-l`, `--logfile`: Log every query and its results to a file.
+* `-f`, `--filename`: Execute semicolon-separated Cypher queries from a file.
 
 ## Features
 
@@ -57,6 +59,12 @@ functions, and predicates.
 #### Cypher Keywords
 
 ![cypher](screenshots/autocomplete-cypher.png)
+
+#### Opening Characters
+
+If you type `(`, `[`, `{`, `"`, or `'`, a matching closing character is automatically placed to the right of your cursor.
+
+![matching](screenshots/autocomplete-matching.png)
 
 ### Syntax Highlighting
 
