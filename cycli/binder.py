@@ -3,13 +3,13 @@ from prompt_toolkit.key_binding.manager import KeyBindingManager
 CypherBinder = KeyBindingManager()
 
 @CypherBinder.registry.add_binding("{")
-def _(event):
+def curly_left(event):
     b = event.cli.current_buffer
     b.insert_text("{")
     b.insert_text("}", move_cursor=False)
 
 @CypherBinder.registry.add_binding("}")
-def _(event):
+def curly_right(event):
     b = event.cli.current_buffer
     char = b.document.current_char
 
@@ -19,13 +19,13 @@ def _(event):
         b.insert_text("}")
 
 @CypherBinder.registry.add_binding("(")
-def _(event):
+def paren_left(event):
     b = event.cli.current_buffer
     b.insert_text("(")
     b.insert_text(")", move_cursor=False)
 
 @CypherBinder.registry.add_binding(")")
-def _(event):
+def paren_right(event):
     b = event.cli.current_buffer
     char = b.document.current_char
 
@@ -35,13 +35,13 @@ def _(event):
         b.insert_text(")")
 
 @CypherBinder.registry.add_binding("[")
-def _(event):
+def bracket_left(event):
     b = event.cli.current_buffer
     b.insert_text("[")
     b.insert_text("]", move_cursor=False)
 
 @CypherBinder.registry.add_binding("]")
-def _(event):
+def bracket_right(event):
     b = event.cli.current_buffer
     char = b.document.current_char
 
@@ -51,7 +51,7 @@ def _(event):
         b.insert_text("]")
 
 @CypherBinder.registry.add_binding("'")
-def _(event):
+def apostrophe(event):
     b = event.cli.current_buffer
     char = b.document.current_char
 
@@ -62,7 +62,7 @@ def _(event):
         b.insert_text("'", move_cursor=False)
 
 @CypherBinder.registry.add_binding("\"")
-def _(event):
+def quote(event):
     b = event.cli.current_buffer
     char = b.document.current_char
 
