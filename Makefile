@@ -3,3 +3,6 @@ install: clean
 
 clean:
 	rm -rf build dist cycli.egg-info
+
+test:
+	python -m unittest
