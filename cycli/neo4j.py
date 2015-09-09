@@ -1,5 +1,6 @@
 import requests
 from py2neo import Graph, authenticate
+from datetime import datetime
 
 
 class Neo4j:
@@ -20,6 +21,7 @@ class Neo4j:
         return graph
 
     def cypher(self, query):
+        start = datetime.now()
         tx = self.connection().cypher.begin()
 
         try:
@@ -32,7 +34,10 @@ class Neo4j:
             tx.rollback()
             results = ""
 
-        return results
+        end = datetime.now()
+        duration = int(round((end - start).total_seconds() * 1000))
+
+        return results, duration
 
     def labels(self):
         return sorted(list(self.connection().node_labels))

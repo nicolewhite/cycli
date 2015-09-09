@@ -121,8 +121,9 @@ class Cycli:
                     print(help_text())
 
                 else:
-                    results = neo4j.cypher(query)
+                    results, duration = neo4j.cypher(query)
                     print(results)
+                    print("{} ms".format(duration))
 
                     if self.logfile:
                         self.write_to_logfile(query, results)
