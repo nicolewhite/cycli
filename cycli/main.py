@@ -44,6 +44,7 @@ class Cycli:
 
     def run(self):
         neo4j = Neo4j(self.host, self.port, self.username, self.password, self.ssl)
+        neo4j.connect()
 
         try:
             labels = neo4j.labels()

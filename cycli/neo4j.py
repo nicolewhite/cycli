@@ -13,16 +13,16 @@ class Neo4j:
         self.host_port = "{host}:{port}".format(host=host, port=port)
         self.url = "{protocol}{host_port}/db/data/".format(protocol=self.protocol, host_port=self.host_port)
 
-    def connection(self):
+    def connect(self):
         if self.username and self.password:
             authenticate(self.host_port, self.username, self.password)
 
         graph = Graph(self.url)
-        return graph
+        self.graph = graph
 
     def cypher(self, query):
         start = datetime.now()
-        tx = self.connection().cypher.begin()
+        tx = self.graph.cypher.begin()
 
         try:
             tx.append(query)
@@ -40,10 +40,10 @@ class Neo4j:
         return results, duration
 
     def labels(self):
-        return sorted(list(self.connection().node_labels))
+        return sorted(list(self.graph.node_labels))
 
     def relationship_types(self):
-        return sorted(list(self.connection().relationship_types))
+        return sorted(list(self.graph.relationship_types))
 
     def properties(self):
         url = self.url + "propertykeys"
