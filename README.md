@@ -89,6 +89,34 @@ Type "help" to see a table of keywords / keystrokes and their descriptions.
 
 ![help](screenshots/help.png)
 
+### Show Schema
+
+Type "schema" to see all schema - labels, relationship types, constraints, indexes
+
+#### Show labels
+
+Type "schema-labels" to see only labels
+
+#### Show relationship types
+
+Type "schema-relations" to see only relationship types
+
+#### Show constraints
+
+Type "schema-constraints" to see only constraints
+
+#### Show indexes
+
+Type "schema-indexes" to see only indexes
+
+### Refresh schema cache
+
+Type "refresh" to refresh cycli console cache for the schema. Useful when there is some update in schema, while the console is open
+
+### Run a cypher N times
+
+Type "run-10" (say) followed by cypher to run a cypher N times. Useful when you want to make a huge update, and would prefer updating records in 1000 batch (say) 100 times, rather than updating 1,00,000 records with single run.
+
 ### Exiting
 
 Exit cycli by typing "quit" or "exit" or by pressing CTRL-D on an empty line.
