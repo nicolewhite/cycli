@@ -98,43 +98,47 @@ class Neo4j:
 
     def print_labels(self):
         results = self.labels()
-        print("Labels")
-        print("======")
-        if not results or len(results) == 0:
-            print("    NONE")
+        title = "Labels"
+        print(title)
+        print("=" * len(title))
+        if not results:
+            print("NONE".rjust(4))
         else:
             for value in results:
-                print("    {}".format(value))
+                print("".rjust(4) + "{}".format(value))
 
     def print_relationship_types(self):
         results = self.relationship_types()
-        print("Relationship Types")
-        print("==================")
-        if not results or len(results) == 0:
-            print("    NONE")
+        title = "Relationship Types"
+        print(title)
+        print("=" * len(title))
+        if not results:
+            print("".rjust(4) + "NONE")
         else:
             for value in results:
-                print("    {}".format(value))
+                print("".rjust(4) + "{}".format(value))
 
     def print_constraints(self):
         results = self.constraints()
-        print("Constraints")
-        print("===========")
-        if not results or len(results) == 0:
-            print("    NONE")
+        title = "Constraints"
+        print(title)
+        print("=" * len(title))
+        if not results:
+            print("".rjust(4) + "NONE")
         else:
             for value in results:
-                print("    :{}({})".format(value['label'], ",".join(value['property_keys'])))
+                print("".rjust(4) + ":{}({})".format(value['label'], ",".join(value['property_keys'])))
 
     def print_indexes(self):
         results = self.indexes()
-        print("Indexes")
-        print("=======")
-        if not results or len(results) == 0:
-            print("    NONE")
+        title = "Indexes"
+        print(title)
+        print("=" * len(title))
+        if not results:
+            print("".rjust(4) + "NONE")
         else:
             for value in results:
-                print("    :{}({})".format(value['label'], ",".join(value['property_keys'])))
+                print("".rjust(4) + ":{}({})".format(value['label'], ",".join(value['property_keys'])))
 
     def print_schema(self):
         self.print_labels()

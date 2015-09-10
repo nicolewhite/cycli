@@ -99,7 +99,7 @@ Type "schema-labels" to see only labels
 
 #### Show relationship types
 
-Type "schema-relations" to see only relationship types
+Type "schema-rels" to see only relationship types
 
 #### Show constraints
 

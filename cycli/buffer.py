@@ -25,6 +25,6 @@ class CypherBuffer(Buffer):
                 text == "schema-constraints",
                 text == "schema-indexes",
                 text == "schema-labels",
-                text == "schema-relations"
+                text == "schema-rels"
             ]
         )

@@ -120,7 +120,7 @@ class Cycli:
                 document = cli.run()
                 query = document.text
 
-                print(query)
+                m = re.match('run-([0-9]+) (.*)', query)
 
                 if query in ["quit", "exit"]:
                     raise Exception
@@ -143,22 +143,23 @@ class Cycli:
                 elif query == "schema-labels":
                     neo4j.print_labels()
 
-                elif query == "schema-relations":
+                elif query == "schema-rels":
                     neo4j.print_relationship_types()
 
-                elif re.match('run-([0-9]+) (.*)', query):
-                    m = re.match('run-([0-9]+) (.*)', query)
+                elif m:
                     count = int(m.group(1))
                     cypher = m.group(2)
 
                     if count <= 0 or not cypher:
                         raise Exception
 
-                    start = datetime.now()
+                    total_duration = 0
 
                     index = 0
                     while index < count:
                         results, duration = neo4j.cypher(cypher)
+                        total_duration += duration
+
                         print(results)
                         print("{} ms".format(duration))
 
@@ -167,9 +168,7 @@ class Cycli:
 
                         index += 1
 
-                    end = datetime.now()
-                    duration = int(round((end - start).total_seconds() * 1000))
-                    print("Total time taken: {} ms".format(duration))
+                    print("{} ms".format(total_duration))
 
                 else:
                     results, duration = neo4j.cypher(query)
@@ -220,7 +219,7 @@ def help_text():
         ("schema-indexes", "Shows all indexes."),
         ("schema-constraints", "Shows all constraints."),
         ("schema-labels", "Shows all labels."),
-        ("schema-relations", "Shows all relationship types."),
+        ("schema-rels", "Shows all relationship types."),
         ("CTRL-D", "Exit cycli if the input is blank."),
         ("CTRL-C", "Abort and rollback the currently-running query.")
     ])
