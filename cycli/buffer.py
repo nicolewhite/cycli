@@ -19,6 +19,12 @@ class CypherBuffer(Buffer):
                 text.endswith("\n"),
                 text == "quit",
                 text == "exit",
-                text == "help"
+                text == "help",
+                text == "refresh",
+                text == "schema",
+                text == "schema-constraints",
+                text == "schema-indexes",
+                text == "schema-labels",
+                text == "schema-relations"
             ]
         )

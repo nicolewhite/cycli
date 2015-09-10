@@ -4,7 +4,10 @@ from datetime import datetime
 
 import sys
 import click
+import re
 
+from datetime import datetime
+from collections import OrderedDict
 from prompt_toolkit import Application, CommandLineInterface, AbortAction
 from prompt_toolkit.history import History
 from prompt_toolkit.shortcuts import create_default_layout, create_eventloop
@@ -117,11 +120,56 @@ class Cycli:
                 document = cli.run()
                 query = document.text
 
+                print(query)
+
                 if query in ["quit", "exit"]:
                     raise Exception
 
                 elif query == "help":
                     print(help_text())
+
+                elif query == "refresh":
+                    neo4j.refresh()
+
+                elif query == "schema":
+                    neo4j.print_schema()
+
+                elif query == "schema-indexes":
+                    neo4j.print_indexes()
+
+                elif query == "schema-constraints":
+                    neo4j.print_constraints()
+
+                elif query == "schema-labels":
+                    neo4j.print_labels()
+
+                elif query == "schema-relations":
+                    neo4j.print_relationship_types()
+
+                elif re.match('run-([0-9]+) (.*)', query):
+                    m = re.match('run-([0-9]+) (.*)', query)
+                    count = int(m.group(1))
+                    cypher = m.group(2)
+
+                    if count <= 0 or not cypher:
+                        raise Exception
+
+                    start = datetime.now()
+
+                    index = 0
+                    while index < count:
+                        results, duration = neo4j.cypher(cypher)
+                        print(results)
+                        print("{} ms".format(duration))
+
+                        if self.logfile:
+                            self.write_to_logfile(query, results, duration)
+
+                        index += 1
+
+                    end = datetime.now()
+                    duration = int(round((end - start).total_seconds() * 1000))
+                    print("Total time taken: {} ms".format(duration))
 
                 else:
                     results, duration = neo4j.cypher(query)
@@ -161,13 +209,21 @@ def run(host, port, username, version, timeout, password, logfile, filename, ssl
 
 
 def help_text():
-    options = {
-        "quit": "Exit cycli.",
-        "exit": "Exit cycli.",
-        "help": "Display this text.",
-        "CTRL-D": "Exit cycli if the input is blank.",
-        "CTRL-C": "Abort and rollback the currently-running query."
-    }
+    # show help in the insertion order
+    options = OrderedDict([
+        ("quit", "Exit cycli."),
+        ("exit", "Exit cycli."),
+        ("help", "Display this text."),
+        ("refresh", "Refreshes schema cache"),
+        ("run-n", "Runs given cypher n-times."),
+        ("schema", "Shows all index, constraints, labels, relations"),
+        ("schema-indexes", "Shows all indexes."),
+        ("schema-constraints", "Shows all constraints."),
+        ("schema-labels", "Shows all labels."),
+        ("schema-relations", "Shows all relationship types."),
+        ("CTRL-D", "Exit cycli if the input is blank."),
+        ("CTRL-C", "Abort and rollback the currently-running query.")
+    ])
 
     keyword_column_size = max([len("keyword")] + [len(key) for key in options.keys()])
     description_column_size = max([len("description")] + [len(descrip) for descrip in options.values()])
