@@ -1,13 +1,9 @@
 from __future__ import unicode_literals, print_function
 
-from datetime import datetime
-
 import sys
 import click
 import re
 
-from datetime import datetime
-from collections import OrderedDict
 from prompt_toolkit import Application, CommandLineInterface, AbortAction
 from prompt_toolkit.history import History
 from prompt_toolkit.shortcuts import create_default_layout, create_eventloop
@@ -24,6 +20,7 @@ from cycli.completer import CypherCompleter
 from cycli.buffer import CypherBuffer
 from cycli.binder import CypherBinder
 from cycli.neo4j import Neo4j
+from cycli.table import pretty_print_table
 
 
 def get_tokens(x):
@@ -126,7 +123,7 @@ class Cycli:
                     raise Exception
 
                 elif query == "help":
-                    print(help_text())
+                    print_help()
 
                 elif query == "refresh":
                     neo4j.refresh()
@@ -208,35 +205,25 @@ def run(host, port, username, version, timeout, password, logfile, filename, ssl
     cycli.run()
 
 
-def help_text():
-    # show help in the insertion order
-    options = OrderedDict([
-        ("quit", "Exit cycli."),
-        ("exit", "Exit cycli."),
-        ("help", "Display this text."),
-        ("refresh", "Refreshes schema cache"),
-        ("run-n", "Runs given cypher n-times."),
-        ("schema", "Shows all index, constraints, labels, relations"),
-        ("schema-indexes", "Shows all indexes."),
-        ("schema-constraints", "Shows all constraints."),
-        ("schema-labels", "Shows all labels."),
-        ("schema-rels", "Shows all relationship types."),
-        ("CTRL-D", "Exit cycli if the input is blank."),
-        ("CTRL-C", "Abort and rollback the currently-running query.")
-    ])
+def print_help():
+    headers = ["Keyword", "Description"]
 
-    keyword_column_size = max([len("keyword")] + [len(key) for key in options.keys()])
-    description_column_size = max([len("description")] + [len(descrip) for descrip in options.values()])
+    rows = [
+        ["quit", "Exit cycli."],
+        ["exit", "Exit cycli."],
+        ["help", "Display this text."],
+        ["refresh", "Refreshes schema cache"],
+        ["run-n", "Runs given cypher n-times."],
+        ["schema", "Shows all index, constraints, labels, relations"],
+        ["schema-indexes", "Shows all indexes."],
+        ["schema-constraints", "Shows all constraints."],
+        ["schema-labels", "Shows all labels."],
+        ["schema-rels", "Shows all relationship types."],
+        ["CTRL-D", "Exit cycli if the input is blank."],
+        ["CTRL-C", "Abort and rollback the currently-running query."]
+    ]
 
-    header = " | " + " | ".join(["keyword".ljust(keyword_column_size), "description".ljust(description_column_size)]) + " | \n"
-    divider = " | " +  "-" * keyword_column_size + " | " + "-" * description_column_size + " | \n"
-
-    text = ""
-
-    for key, value in options.items():
-        text += " | " + " | ".join([key.ljust(keyword_column_size), value.ljust(description_column_size)]) + " | \n"
-
-    return header + divider + text
+    pretty_print_table(headers, rows)
 
 
 if __name__ == '__main__':

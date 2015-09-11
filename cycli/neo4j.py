@@ -1,6 +1,7 @@
 import requests
 from py2neo import Graph, authenticate, Resource
 from datetime import datetime
+from cycli.table import pretty_print_table
 
 
 class Neo4j:
@@ -97,48 +98,30 @@ class Neo4j:
         self.constraints()
 
     def print_labels(self):
-        results = self.labels()
-        title = "Labels"
-        print(title)
-        print("=" * len(title))
-        if not results:
-            print("NONE".rjust(4))
-        else:
-            for value in results:
-                print("".rjust(4) + "{}".format(value))
+        headers = ["Labels"]
+        rows = [[x] for x in self.labels()]
+
+        pretty_print_table(headers, rows)
 
     def print_relationship_types(self):
-        results = self.relationship_types()
-        title = "Relationship Types"
-        print(title)
-        print("=" * len(title))
-        if not results:
-            print("".rjust(4) + "NONE")
-        else:
-            for value in results:
-                print("".rjust(4) + "{}".format(value))
+        headers = ["Relationship Types"]
+        rows = [[x] for x in self.relationship_types()]
+
+        pretty_print_table(headers, rows)
 
     def print_constraints(self):
-        results = self.constraints()
-        title = "Constraints"
-        print(title)
-        print("=" * len(title))
-        if not results:
-            print("".rjust(4) + "NONE")
-        else:
-            for value in results:
-                print("".rjust(4) + ":{}({})".format(value['label'], ",".join(value['property_keys'])))
+        headers = ["Constraints"]
+        constraints = self.constraints()
+        rows = [[":{}({})".format(value["label"], ",".join(value["property_keys"]))] for value in constraints]
+
+        pretty_print_table(headers, rows)
 
     def print_indexes(self):
-        results = self.indexes()
-        title = "Indexes"
-        print(title)
-        print("=" * len(title))
-        if not results:
-            print("".rjust(4) + "NONE")
-        else:
-            for value in results:
-                print("".rjust(4) + ":{}({})".format(value['label'], ",".join(value['property_keys'])))
+        headers = ["Indexes"]
+        indexes = self.indexes()
+        rows = [[":{}({})".format(value["label"], ",".join(value["property_keys"]))] for value in indexes]
+
+        pretty_print_table(headers, rows)
 
     def print_schema(self):
         self.print_labels()
