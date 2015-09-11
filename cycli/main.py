@@ -143,20 +143,19 @@ class Cycli:
                 elif query == "schema-rels":
                     neo4j.print_relationship_types()
 
-                elif m:
-                    count = int(m.group(1))
-                    cypher = m.group(2)
+                else:
+                    count = int(m.group(1)) if m else 1
+                    query = m.group(2) if m else query
 
-                    if count <= 0 or not cypher:
+                    if count <= 0 or not query:
                         raise Exception
 
                     total_duration = 0
-
                     index = 0
-                    while index < count:
-                        results, duration = neo4j.cypher(cypher)
-                        total_duration += duration
 
+                    while index < count:
+                        results, duration = neo4j.cypher(query)
+                        
                         print(results)
                         print("Run-{} : {} ms".format(index+1, duration))
                         print()
@@ -166,15 +165,8 @@ class Cycli:
 
                         index += 1
 
-                    print("Total duration: {} ms".format(total_duration))
-
-                else:
-                    results, duration = neo4j.cypher(query)
-                    print(results)
-                    print("{} ms".format(duration))
-
-                    if self.logfile:
-                        self.write_to_logfile(query, results, duration)
+                    if m:
+                        print("Total duration: {} ms".format(total_duration))
 
         except Exception:
             print("Goodbye!")
