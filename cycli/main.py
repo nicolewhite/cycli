@@ -169,7 +169,7 @@ class Cycli:
 
                         index += 1
 
-                    print("{} ms".format(total_duration))
+                    print("Total duration: {} ms".format(total_duration))
 
                 else:
                     results, duration = neo4j.cypher(query)
