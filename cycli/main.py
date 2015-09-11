@@ -155,14 +155,15 @@ class Cycli:
 
                     while index < count:
                         results, duration = neo4j.cypher(query)
+                        run = "Run {}: ".format(index + 1) if m else ""
                         
                         print(results)
-                        print("Run-{} : {} ms".format(index+1, duration))
-                        print()
+                        print("{}{} ms\n".format(run, duration))
 
                         if self.logfile:
                             self.write_to_logfile(query, results, duration)
 
+                        total_duration += duration
                         index += 1
 
                     if m:
