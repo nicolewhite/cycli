@@ -1,9 +1,10 @@
 from __future__ import unicode_literals, print_function
 
-from datetime import datetime
-
 import sys
 import click
+import re
+
+from datetime import datetime
 
 from prompt_toolkit import Application, CommandLineInterface, AbortAction
 from prompt_toolkit.history import History
@@ -21,6 +22,7 @@ from cycli.completer import CypherCompleter
 from cycli.buffer import CypherBuffer
 from cycli.binder import CypherBinder
 from cycli.neo4j import Neo4j
+from cycli.table import pretty_print_table
 
 
 def get_tokens(x):
@@ -117,19 +119,57 @@ class Cycli:
                 document = cli.run()
                 query = document.text
 
+                m = re.match('run-([0-9]+) (.*)', query, re.DOTALL)
+
                 if query in ["quit", "exit"]:
                     raise Exception
 
                 elif query == "help":
-                    print(help_text())
+                    print_help()
+
+                elif query == "refresh":
+                    neo4j.refresh()
+
+                elif query == "schema":
+                    neo4j.print_schema()
+
+                elif query == "schema-indexes":
+                    neo4j.print_indexes()
+
+                elif query == "schema-constraints":
+                    neo4j.print_constraints()
+
+                elif query == "schema-labels":
+                    neo4j.print_labels()
+
+                elif query == "schema-rels":
+                    neo4j.print_relationship_types()
 
                 else:
-                    results, duration = neo4j.cypher(query)
-                    print(results)
-                    print("{} ms".format(duration))
+                    count = int(m.group(1)) if m else 1
+                    query = m.group(2) if m else query
 
-                    if self.logfile:
-                        self.write_to_logfile(query, results, duration)
+                    if count <= 0 or not query:
+                        raise Exception
+
+                    total_duration = 0
+                    index = 0
+
+                    while index < count:
+                        results, duration = neo4j.cypher(query)
+                        run = "Run {}: ".format(index + 1) if m else ""
+                        
+                        print(results)
+                        print("{}{} ms\n".format(run, duration))
+
+                        if self.logfile:
+                            self.write_to_logfile(query, results, duration)
+
+                        total_duration += duration
+                        index += 1
+
+                    if m:
+                        print("Total duration: {} ms".format(total_duration))
 
         except Exception:
             print("Goodbye!")
@@ -160,27 +200,25 @@ def run(host, port, username, version, timeout, password, logfile, filename, ssl
     cycli.run()
 
 
-def help_text():
-    options = {
-        "quit": "Exit cycli.",
-        "exit": "Exit cycli.",
-        "help": "Display this text.",
-        "CTRL-D": "Exit cycli if the input is blank.",
-        "CTRL-C": "Abort and rollback the currently-running query."
-    }
+def print_help():
+    headers = ["Keyword", "Description"]
 
-    keyword_column_size = max([len("keyword")] + [len(key) for key in options.keys()])
-    description_column_size = max([len("description")] + [len(descrip) for descrip in options.values()])
+    rows = [
+        ["quit", "Exit cycli."],
+        ["exit", "Exit cycli."],
+        ["help", "Display this text."],
+        ["refresh", "Refresh schema cache."],
+        ["run-n", "Run a Cypher query n times."],
+        ["schema", "Display indexes, constraints, labels, and relationship types."],
+        ["schema-indexes", "Display indexes."],
+        ["schema-constraints", "Display constraints."],
+        ["schema-labels", "Display labels."],
+        ["schema-rels", "Display relationship types."],
+        ["CTRL-D", "Exit cycli if the input is blank."],
+        ["CTRL-C", "Abort and rollback the currently-running query."]
+    ]
 
-    header = " | " + " | ".join(["keyword".ljust(keyword_column_size), "description".ljust(description_column_size)]) + " | \n"
-    divider = " | " +  "-" * keyword_column_size + " | " + "-" * description_column_size + " | \n"
-
-    text = ""
-
-    for key, value in options.items():
-        text += " | " + " | ".join([key.ljust(keyword_column_size), value.ljust(description_column_size)]) + " | \n"
-
-    return header + divider + text
+    pretty_print_table(headers, rows)
 
 
 if __name__ == '__main__':
