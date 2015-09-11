@@ -46,47 +46,50 @@ class Neo4j:
         return results, duration
 
     def labels(self):
-        if self.__labels is None:
-            # directly query from resource - as py2neo does caching of node_labels
+        if not self.__labels:
             labels_resource = Resource(self.graph.uri.string + "labels")
             self.__labels = sorted(list(frozenset(labels_resource.get().content)))
+
         return self.__labels
 
     def relationship_types(self):
-        if self.__relationship_types is None:
-            # directly query from resource - as py2neo does caching of relationship_types
+        if not self.__relationship_types:
             relationship_types_resource = Resource(self.graph.uri.string + "relationship/types")
             self.__relationship_types = sorted(list(frozenset(relationship_types_resource.get().content)))
+
         return self.__relationship_types
 
     def constraints(self):
-        if self.__constraints is None:
+        if not self.__constraints:
             constraints = []
             constraints_resource = Resource(self.graph.uri.string + "schema/constraint")
             constraints_content = list(constraints_resource.get().content)
+
             for i in constraints_content:
                 constraint = dict(i)
                 constraint["property_keys"] = list(constraint["property_keys"])
                 constraints.append(constraint)
 
             self.__constraints = constraints
+
         return self.__constraints
 
     def indexes(self):
-        if self.__indexes is None:
+        if not self.__indexes:
             indexes = []
             for label in self.labels():
                 index_resource = Resource(self.graph.uri.string + "schema/index/" + label)
                 indexes_content = list(index_resource.get().content)
+
                 for i in indexes_content:
                     index = dict(i)
                     index["property_keys"] = list(index["property_keys"])
                     indexes.append(index)
 
             self.__indexes = indexes
+
         return self.__indexes
 
-    # when schema changes - user can call refresh
     def refresh(self):
         self.__labels = None
         self.__relationship_types = None
