@@ -115,22 +115,33 @@ class Neo4j:
     def print_constraints(self):
         headers = ["Constraints"]
         constraints = self.constraints()
-        rows = [[":{}({})".format(value["label"], ",".join(value["property_keys"]))] for value in constraints]
+        rows = [[x] for x in self.format_constraints_indexes(constraints)]
 
         pretty_print_table(headers, rows)
 
     def print_indexes(self):
         headers = ["Indexes"]
         indexes = self.indexes()
-        rows = [[":{}({})".format(value["label"], ",".join(value["property_keys"]))] for value in indexes]
+        rows = [[x] for x in self.format_constraints_indexes(indexes)]
 
         pretty_print_table(headers, rows)
 
+    def format_constraints_indexes(self, values):
+        return [":{}({})".format(value["label"], ",".join(value["property_keys"])) for value in values]
+
     def print_schema(self):
-        self.print_labels()
-        self.print_relationship_types()
-        self.print_indexes()
-        self.print_constraints()
+        headers = ["Labels", "Relationship Types", "Constraints", "Indexes"]
+
+        columns = [self.labels()]
+        columns.append(self.relationship_types())
+        columns.append(self.format_constraints_indexes(self.constraints()))
+        columns.append(self.format_constraints_indexes(self.indexes()))
+
+        max_length = len(max(columns, key=len))
+        [x.extend([""] * (max_length - len(x))) for x in columns]
+        rows = [[x[i] for x in columns] for i in range(max_length)]
+
+        pretty_print_table(headers, rows)
 
     def properties(self):
         url = self.url + "propertykeys"
