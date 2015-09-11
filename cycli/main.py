@@ -120,7 +120,7 @@ class Cycli:
                 document = cli.run()
                 query = document.text
 
-                m = re.match('run-([0-9]+) (.*)', query)
+                m = re.match('run-([0-9]+) (.*)', query, re.DOTALL)
 
                 if query in ["quit", "exit"]:
                     raise Exception
@@ -161,7 +161,8 @@ class Cycli:
                         total_duration += duration
 
                         print(results)
-                        print("{} ms".format(duration))
+                        print("Run-{} : {} ms".format(index+1, duration))
+                        print()
 
                         if self.logfile:
                             self.write_to_logfile(query, results, duration)
