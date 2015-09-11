@@ -4,6 +4,8 @@ import sys
 import click
 import re
 
+from datetime import datetime
+
 from prompt_toolkit import Application, CommandLineInterface, AbortAction
 from prompt_toolkit.history import History
 from prompt_toolkit.shortcuts import create_default_layout, create_eventloop
