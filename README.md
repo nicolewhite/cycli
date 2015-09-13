@@ -35,6 +35,7 @@ You will then be prompted to enter your password. For more options, execute `cyc
 * `-t`, `--timeout`: Set a global socket timeout for queries.
 * `-l`, `--logfile`: Log every query and its results to a file.
 * `-f`, `--filename`: Execute semicolon-separated Cypher queries from a file.
+* `-r`, `--read-only`: Don't allow write queries.
 
 ## Features
 
@@ -79,47 +80,81 @@ available in the Neo4j browser.
 
 Execute queries by ending them with a semicolon and pressing enter or by pressing enter twice.
 
-### Abort Queries
-
-While a query is executing, CTRL-C will abort the query and rollback the transaction.
-
-### Get Help
+### Keywords
 
 Type "help" to see a table of keywords / keystrokes and their descriptions.
 
-![help](screenshots/help.png)
+Keyword            | Description
+-------------------|--------------------------------------------------------------
+quit               | Exit cycli.
+exit               | Exit cycli.
+help               | Display this text.
+refresh            | Refresh schema cache.
+run-n              | Run a Cypher query n times.
+schema             | Display indexes, constraints, labels, and relationship types.
+schema-indexes     | Display indexes.
+schema-constraints | Display constraints.
+schema-labels      | Display labels.
+schema-rels        | Display relationship types.
+CTRL-D             | Exit cycli if the input is blank.
+CTRL-C             | Abort and rollback the currently-running query.
 
-### Show Schema
+### `run-n`
 
-Type "schema" to see all schema - labels, relationship types, constraints, indexes
+Run a Cypher query `n` times. This is useful for large updates, e.g. if you want to update a property in batches.
 
-#### Show labels
+```
+> MATCH (n) RETURN COUNT(*);
 
-Type "schema-labels" to see only labels
+   | COUNT(*)
+---+----------
+ 1 |      456
 
-#### Show relationship types
+26 ms
+```
 
-Type "schema-rels" to see only relationship types
+Let's say we want to add a new property in batches of 100. If we have 456 nodes, we'll need to run the same Cypher query
+5 times.
 
-#### Show constraints
+```
+> run-5 MATCH (n)
+WHERE NOT HAS(n.newProperty)
+WITH n LIMIT 100
+SET n.newProperty = "Hello World"
+RETURN COUNT(*);
 
-Type "schema-constraints" to see only constraints
+   | COUNT(*)
+---+----------
+ 1 |      100
 
-#### Show indexes
+Run 1: 44 ms
 
-Type "schema-indexes" to see only indexes
+   | COUNT(*)
+---+----------
+ 1 |      100
 
-### Refresh schema cache
+Run 2: 8 ms
 
-Type "refresh" to refresh cycli console cache for the schema. Useful when there is some update in schema, while the console is open
+   | COUNT(*)
+---+----------
+ 1 |      100
 
-### Run a cypher N times
+Run 3: 8 ms
 
-Type "run-10" (say) followed by cypher to run a cypher N times. Useful when you want to make a huge update, and would prefer updating records in 1000 batch (say) 100 times, rather than updating 1,00,000 records with single run.
+   | COUNT(*)
+---+----------
+ 1 |      100
 
-### Exiting
+Run 4: 10 ms
 
-Exit cycli by typing "quit" or "exit" or by pressing CTRL-D on an empty line.
+   | COUNT(*)
+---+----------
+ 1 |       56
+
+Run 5: 9 ms
+
+Total duration: 79 ms
+```
 
 ## Credits
 
