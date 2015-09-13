@@ -28,6 +28,7 @@ from cycli.table import pretty_print_table
 def get_tokens(x):
         return [(Token.Prompt, "> ")]
 
+
 class Cycli:
 
     def __init__(self, host, port, username, password, logfile, filename, ssl):
@@ -171,6 +172,28 @@ class Cycli:
             if m:
                 print("Total duration: {} ms".format(total_duration))
 
+
+def print_help():
+    headers = ["Keyword", "Description"]
+
+    rows = [
+        ["quit", "Exit cycli."],
+        ["exit", "Exit cycli."],
+        ["help", "Display this text."],
+        ["refresh", "Refresh schema cache."],
+        ["run-n", "Run a Cypher query n times."],
+        ["schema", "Display indexes, constraints, labels, and relationship types."],
+        ["schema-indexes", "Display indexes."],
+        ["schema-constraints", "Display constraints."],
+        ["schema-labels", "Display labels."],
+        ["schema-rels", "Display relationship types."],
+        ["CTRL-D", "Exit cycli if the input is blank."],
+        ["CTRL-C", "Abort and rollback the currently-running query."]
+    ]
+
+    pretty_print_table(headers, rows)
+
+
 @click.command()
 @click.option("-v", "--version", is_flag=True, help="Show cycli version and exit.")
 @click.option("-h", "--host", default="localhost", help="The host address of Neo4j.")
@@ -194,27 +217,6 @@ def run(host, port, username, version, timeout, password, logfile, filename, ssl
 
     cycli = Cycli(host, port, username, password, logfile, filename, ssl)
     cycli.run()
-
-
-def print_help():
-    headers = ["Keyword", "Description"]
-
-    rows = [
-        ["quit", "Exit cycli."],
-        ["exit", "Exit cycli."],
-        ["help", "Display this text."],
-        ["refresh", "Refresh schema cache."],
-        ["run-n", "Run a Cypher query n times."],
-        ["schema", "Display indexes, constraints, labels, and relationship types."],
-        ["schema-indexes", "Display indexes."],
-        ["schema-constraints", "Display constraints."],
-        ["schema-labels", "Display labels."],
-        ["schema-rels", "Display relationship types."],
-        ["CTRL-D", "Exit cycli if the input is blank."],
-        ["CTRL-C", "Abort and rollback the currently-running query."]
-    ]
-
-    pretty_print_table(headers, rows)
 
 
 if __name__ == '__main__':
