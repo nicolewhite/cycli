@@ -48,6 +48,7 @@ class Cycli:
     def run(self):
         neo4j = Neo4j(self.host, self.port, self.username, self.password, self.ssl)
         neo4j.connect()
+        self.neo4j = neo4j
 
         try:
             labels = neo4j.labels()
@@ -69,15 +70,7 @@ class Cycli:
             for query in queries:
                 query += ";"
                 query = query.strip()
-
-                results, duration = neo4j.cypher(query)
-
-                print("{}\n".format(query))
-                print(results)
-                print("{} ms\n".format(duration))
-
-                if self.logfile:
-                    self.write_to_logfile(query, results, duration)
+                self.handle_query(query)
 
             return
 
@@ -118,62 +111,63 @@ class Cycli:
             while True:
                 document = cli.run()
                 query = document.text
-
-                m = re.match('run-([0-9]+) (.*)', query, re.DOTALL)
-
-                if query in ["quit", "exit"]:
-                    raise Exception
-
-                elif query == "help":
-                    print_help()
-
-                elif query == "refresh":
-                    neo4j.refresh()
-
-                elif query == "schema":
-                    neo4j.print_schema()
-
-                elif query == "schema-indexes":
-                    neo4j.print_indexes()
-
-                elif query == "schema-constraints":
-                    neo4j.print_constraints()
-
-                elif query == "schema-labels":
-                    neo4j.print_labels()
-
-                elif query == "schema-rels":
-                    neo4j.print_relationship_types()
-
-                else:
-                    count = int(m.group(1)) if m else 1
-                    query = m.group(2) if m else query
-
-                    if count <= 0 or not query:
-                        raise Exception
-
-                    total_duration = 0
-                    index = 0
-
-                    while index < count:
-                        results, duration = neo4j.cypher(query)
-                        run = "Run {}: ".format(index + 1) if m else ""
-                        
-                        print(results)
-                        print("{}{} ms\n".format(run, duration))
-
-                        if self.logfile:
-                            self.write_to_logfile(query, results, duration)
-
-                        total_duration += duration
-                        index += 1
-
-                    if m:
-                        print("Total duration: {} ms".format(total_duration))
+                self.handle_query(query)
 
         except Exception:
             print("Goodbye!")
 
+    def handle_query(self, query):
+        m = re.match('run-([0-9]+) (.*)', query, re.DOTALL)
+
+        if query in ["quit", "exit"]:
+            raise Exception
+
+        elif query == "help":
+            print_help()
+
+        elif query == "refresh":
+            self.neo4j.refresh()
+
+        elif query == "schema":
+            self.neo4j.print_schema()
+
+        elif query == "schema-indexes":
+            self.neo4j.print_indexes()
+
+        elif query == "schema-constraints":
+            self.neo4j.print_constraints()
+
+        elif query == "schema-labels":
+            self.neo4j.print_labels()
+
+        elif query == "schema-rels":
+            self.neo4j.print_relationship_types()
+
+        else:
+            count = int(m.group(1)) if m else 1
+            query = m.group(2) if m else query
+
+            if count <= 0 or not query:
+                raise Exception
+
+            total_duration = 0
+            index = 0
+
+            while index < count:
+                results, duration = self.neo4j.cypher(query)
+                run = "Run {}: ".format(index + 1) if m else ""
+
+                print(results)
+                print("{}{} ms\n".format(run, duration))
+
+                if self.logfile:
+                    self.write_to_logfile(query, results, duration)
+
+                total_duration += duration
+                index += 1
+
+            if m:
+                print("Total duration: {} ms".format(total_duration))
 
 @click.command()
 @click.option("-v", "--version", is_flag=True, help="Show cycli version and exit.")
