@@ -31,7 +31,7 @@ def get_tokens(x):
 
 class Cycli:
 
-    def __init__(self, host, port, username, password, logfile, filename, ssl):
+    def __init__(self, host, port, username, password, logfile, filename, ssl, read_only):
         self.host = host
         self.port = port
         self.username = username
@@ -39,6 +39,7 @@ class Cycli:
         self.logfile = logfile
         self.filename = filename
         self.ssl = ssl
+        self.read_only = read_only
 
     def write_to_logfile(self, query, results, duration):
         self.logfile.write("{}\n".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
@@ -120,9 +121,17 @@ class Cycli:
             print("Goodbye!")
 
     def handle_query(self, query):
+        # Check to see if the user is in run-n mode.
         m = re.match('run-([0-9]+) (.*)', query, re.DOTALL)
 
-        if query in ["quit", "exit"]:
+        # Check for update keywords in query string not wrapped in quotes.
+        unquoted = re.findall('(?:^|"|\')([^"|\']*)(?:$|"|\')', query, flags=re.DOTALL)
+        unquoted = "".join(unquoted)
+
+        if re.search("(create|merge|delete|set|remove|drop)", unquoted, flags=re.IGNORECASE) and self.read_only:
+            print("You are in read-only mode.")
+
+        elif query in ["quit", "exit"]:
             raise Exception
 
         elif query == "help":
@@ -204,7 +213,8 @@ def print_help():
 @click.option('-l', '--logfile', type=click.File(mode="a", encoding="utf-8"), help="Log every query and its results to a file.")
 @click.option("-f", "--filename", type=click.File(mode="rb"), help="Execute semicolon-separated Cypher queries from a file.")
 @click.option("-s", "--ssl", is_flag=True, help="Use the HTTPS protocol.")
-def run(host, port, username, version, timeout, password, logfile, filename, ssl):
+@click.option("-r", "--read-only", is_flag=True, help="Do not allow any write queries.")
+def run(host, port, username, version, timeout, password, logfile, filename, ssl, read_only):
     if version:
         print("cycli {}".format(__version__))
         sys.exit(0)
@@ -215,7 +225,7 @@ def run(host, port, username, version, timeout, password, logfile, filename, ssl
     if timeout:
         http.socket_timeout = timeout
 
-    cycli = Cycli(host, port, username, password, logfile, filename, ssl)
+    cycli = Cycli(host, port, username, password, logfile, filename, ssl, read_only)
     cycli.run()
 
 
