@@ -41,11 +41,17 @@ class Cycli:
         self.ssl = ssl
         self.read_only = read_only
 
-    def write_to_logfile(self, query, results, duration):
+    def write_to_logfile(self, query, response):
+        results = response["results"]
+        duration = response["duration"]
+        error = response["error"]
+
         self.logfile.write("{}\n".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         self.logfile.write("\n> {}\n".format(query))
         self.logfile.write("{}\n".format(results))
-        self.logfile.write("{} ms\n\n".format(duration))
+
+        if not error:
+            self.logfile.write("{} ms\n\n".format(duration))
 
     def run(self):
         neo4j = Neo4j(self.host, self.port, self.username, self.password, self.ssl)
@@ -181,7 +187,7 @@ class Cycli:
                     print(ms)
 
                 if self.logfile:
-                    self.write_to_logfile(query, results, duration)
+                    self.write_to_logfile(query, response)
 
                 total_duration += duration
                 index += 1
