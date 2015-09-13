@@ -1,4 +1,4 @@
-# cycli [![Build Status](https://travis-ci.org/nicolewhite/cycli.svg?branch=master)](https://travis-ci.org/nicolewhite/cycli)
+# cycli [![Build Status](https://travis-ci.org/nicolewhite/cycli.svg?branch=master)](https://travis-ci.org/nicolewhite/cycli) [![PyPi version](https://badge.fury.io/py/cycli.svg)](https://pypi.python.org/pypi/cycli/)
 A Command Line Interface for Neo4j's Cypher Query Language.
 
 ![demo](screenshots/output.gif)
