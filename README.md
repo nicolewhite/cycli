@@ -105,7 +105,6 @@ Run a Cypher query `n` times. This is useful for large updates, e.g. if you want
 
 ```
 > MATCH (n) RETURN COUNT(*);
-
    | COUNT(*)
 ---+----------
  1 |      456
@@ -122,7 +121,6 @@ WHERE NOT HAS(n.newProperty)
 WITH n LIMIT 100
 SET n.newProperty = "Hello World"
 RETURN COUNT(*);
-
    | COUNT(*)
 ---+----------
  1 |      100
