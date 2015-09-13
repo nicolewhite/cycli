@@ -4,8 +4,6 @@ import sys
 import click
 import re
 
-from datetime import datetime
-
 from prompt_toolkit import Application, CommandLineInterface, AbortAction
 from prompt_toolkit.history import History
 from prompt_toolkit.shortcuts import create_default_layout, create_eventloop
@@ -46,8 +44,7 @@ class Cycli:
         duration = response["duration"]
         error = response["error"]
 
-        self.logfile.write("{}\n".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
-        self.logfile.write("\n> {}\n".format(query))
+        self.logfile.write("> {}\n".format(query))
         self.logfile.write("{}\n".format(results))
 
         if not error:
