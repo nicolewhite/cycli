@@ -43,8 +43,8 @@ class Cycli:
 
     def write_to_logfile(self, query, results, duration):
         self.logfile.write("{}\n".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
-        self.logfile.write("\n{}\n".format(query))
-        self.logfile.write("\n{}\n".format(results))
+        self.logfile.write("\n> {}\n".format(query))
+        self.logfile.write("{}\n".format(results))
         self.logfile.write("{} ms\n\n".format(duration))
 
     def run(self):
@@ -73,8 +73,9 @@ class Cycli:
                 query += ";"
                 query = query.strip()
 
-                print(query + "\n")
+                print("> " + query)
                 self.handle_query(query)
+                print()
 
             return
 
@@ -167,10 +168,10 @@ class Cycli:
 
             while index < count:
                 results, duration = self.neo4j.cypher(query)
-                run = "Run {}: ".format(index + 1) if m else ""
+                ms = "Run {}: {} ms\n".format(index + 1, duration) if m else "{} ms".format(duration)
 
                 print(results)
-                print("{}{} ms\n".format(run, duration))
+                print(ms)
 
                 if self.logfile:
                     self.write_to_logfile(query, results, duration)
