@@ -40,7 +40,7 @@ class Cycli:
         self.ssl = ssl
 
     def write_to_logfile(self, query, results, duration):
-        self.logfile.write("{}\n".format(datetime.now()))
+        self.logfile.write("{}\n".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         self.logfile.write("\n{}\n".format(query))
         self.logfile.write("\n{}\n".format(results))
         self.logfile.write("{} ms\n\n".format(duration))
