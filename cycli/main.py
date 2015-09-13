@@ -165,13 +165,20 @@ class Cycli:
 
             total_duration = 0
             index = 0
+            error = False
 
             while index < count:
-                results, duration = self.neo4j.cypher(query)
-                ms = "Run {}: {} ms\n".format(index + 1, duration) if m else "{} ms".format(duration)
+                response = self.neo4j.cypher(query)
+
+                results = response["results"]
+                duration = response["duration"]
+                error = response["error"]
 
                 print(results)
-                print(ms)
+
+                if not error:
+                    ms = "Run {}: {} ms\n".format(index + 1, duration) if m else "{} ms".format(duration)
+                    print(ms)
 
                 if self.logfile:
                     self.write_to_logfile(query, results, duration)
@@ -179,7 +186,7 @@ class Cycli:
                 total_duration += duration
                 index += 1
 
-            if m:
+            if m and not error:
                 print("Total duration: {} ms".format(total_duration))
 
 

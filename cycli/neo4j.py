@@ -27,6 +27,7 @@ class Neo4j:
         self.graph = graph
 
     def cypher(self, query):
+        error = False
         start = datetime.now()
         tx = self.graph.cypher.begin()
 
@@ -36,14 +37,16 @@ class Neo4j:
             tx.commit()
         except Exception as e:
             results = e
+            error = True
         except KeyboardInterrupt:
             tx.rollback()
             results = ""
+            error = True
 
         end = datetime.now()
         duration = int(round((end - start).total_seconds() * 1000))
 
-        return results, duration
+        return {"results": results, "duration": duration, "error": error}
 
     def labels(self):
         if not self.__labels:
