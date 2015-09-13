@@ -70,6 +70,8 @@ class Cycli:
             for query in queries:
                 query += ";"
                 query = query.strip()
+
+                print(query + "\n")
                 self.handle_query(query)
 
             return
