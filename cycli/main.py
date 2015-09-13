@@ -133,7 +133,7 @@ class Cycli:
         unquoted = "".join(unquoted)
 
         if re.search("(create|merge|delete|set|remove|drop)", unquoted, flags=re.IGNORECASE) and self.read_only:
-            print("You are in read-only mode.")
+            print("Query aborted. You are in read-only mode.")
 
         elif query in ["quit", "exit"]:
             raise Exception
