@@ -5,6 +5,8 @@ A Command Line Interface for Neo4j's Cypher Query Language.
 
 ## Install
 
+<img align="right" src="screenshots/logo.png" />
+
 ```
 $ pip install cycli
 ```
