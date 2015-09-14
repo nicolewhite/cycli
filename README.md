@@ -26,17 +26,24 @@ $ cycli -u username
 
 You will then be prompted to enter your password. For more options, execute `cycli --help`.
 
-## Options
+```
+$ cycli --help
+Usage: cycli [OPTIONS]
 
-* `-v`, `--version`: Show cycli version and exit.
-* `-h`, `--host`: The host address of Neo4j.
-* `-P`, `--port`: The port number on which Neo4j is listening.
-* `-u`, `--username`: Username for Neo4j authentication.
-* `-p`, `--password`: Password for Neo4j authentication.
-* `-t`, `--timeout`: Set a global socket timeout for queries.
-* `-l`, `--logfile`: Log every query and its results to a file.
-* `-f`, `--filename`: Execute semicolon-separated Cypher queries from a file.
-* `-r`, `--read-only`: Don't allow write queries.
+Options:
+  -v, --version            Show cycli version and exit.
+  -h, --host TEXT          The host address of Neo4j.
+  -P, --port TEXT          The port number on which Neo4j is listening.
+  -u, --username TEXT      Username for Neo4j authentication.
+  -p, --password TEXT      Password for Neo4j authentication.
+  -t, --timeout INTEGER    Set a global socket timeout for queries.
+  -l, --logfile FILENAME   Log every query and its results to a file.
+  -f, --filename FILENAME  Execute semicolon-separated Cypher queries from a
+                           file.
+  -s, --ssl                Use the HTTPS protocol.
+  -r, --read-only          Do not allow any write queries.
+  --help                   Show this message and exit.
+```
 
 ## Features
 
