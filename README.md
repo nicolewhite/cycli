@@ -12,8 +12,6 @@ $ pip install cycli
 
 ## Start
 
-<img align="right" style="padding: 15px" src="screenshots/logo.png" />
-
 To start, simply execute `cycli` from your terminal.
 
 ```
@@ -160,4 +158,8 @@ Total duration: 79 ms
 ## Credits
 
 This project depends heavily on [python-prompt-toolkit](https://github.com/jonathanslenders/python-prompt-toolkit) and
-[py2neo](https://github.com/nigelsmall/py2neo).
+[py2neo](https://github.com/nigelsmall/py2neo). The logo was designed by Greta Workman.
+
+<p align="center">
+  <img src="screenshots/logo.png" />
+</p>
