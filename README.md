@@ -12,7 +12,7 @@ $ pip install cycli
 
 ## Start
 
-<img align="right" src="screenshots/logo.png" />
+<img align="right" style="padding: 15px" src="screenshots/logo.png" />
 
 To start, simply execute `cycli` from your terminal.
 
