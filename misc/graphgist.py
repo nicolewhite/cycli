@@ -1,4 +1,5 @@
 import requests
+import re
 
 def parse_text_from_html(html, prefix, postfix):
     data = []
@@ -45,7 +46,56 @@ def get_queries(raw_url):
 
     return queries
 
-wiki = "https://github.com/neo4j-contrib/graphgist/wiki"
-urls = get_github_gist_urls(requests.get(wiki).text)
-urls = list(set(urls))
-raw_urls = [get_raw_url(url) for url in urls]
+def remove_strings(query):
+    query = re.sub(r"'.*?'", "", query)
+    query = re.sub(r'".*?"', "", query)
+    return query
+
+def remove_comments(query):
+    query = re.sub(r"//.*?\n", "", query)
+    return query
+
+def remove_rels(query):
+    query = re.sub(r"\[.*?\]", "", query)
+    return query
+
+def remove_misc(query):
+    query = query.replace("\n", " ")
+    query = query.replace("\r", " ")
+    query = query.replace("-", "")
+    query = query.replace(">", "")
+    query = query.replace("<", "")
+    return query
+
+def clean_query(query):
+    query = " " + query + " "
+    query = query.upper()
+    return query
+
+def isolate_keywords(query):
+    query = remove_strings(query)
+    query = remove_comments(query)
+    query = remove_rels(query)
+    query = remove_misc(query)
+    query = clean_query(query)
+    return query
+
+def get_all_queries():
+    wiki = "https://github.com/neo4j-contrib/graphgist/wiki"
+    urls = get_github_gist_urls(requests.get(wiki).text)
+    urls = list(set(urls))
+    urls = [url for url in urls if url]
+    raw_urls = [get_raw_url(url) for url in urls]
+
+    queries = []
+
+    for raw_url in raw_urls:
+        try:
+            queries.extend(get_queries(raw_url))
+        except Exception as e:
+            print(e)
+            continue
+
+    isolated = [isolate_keywords(query) for query in queries]
+
+    return isolated
