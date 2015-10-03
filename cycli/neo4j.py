@@ -135,10 +135,10 @@ class Neo4j:
     def print_schema(self):
         headers = ["Labels", "Relationship Types", "Constraints", "Indexes"]
 
-        columns = [self.labels()]
-        columns.append(self.relationship_types())
-        columns.append(self.format_constraints_indexes(self.constraints()))
-        columns.append(self.format_constraints_indexes(self.indexes()))
+        columns = [self.labels()[:]]
+        columns.append(self.relationship_types()[:])
+        columns.append(self.format_constraints_indexes(self.constraints()[:]))
+        columns.append(self.format_constraints_indexes(self.indexes()[:]))
 
         max_length = len(max(columns, key=len))
         [x.extend([""] * (max_length - len(x))) for x in columns]
