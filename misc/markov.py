@@ -1,12 +1,14 @@
-from cycli.cypher import FUNCS, KEYWORDS, cypher_words
+from cycli.cypher import Cypher
 from misc.graphgist import get_all_queries
 import json
+
+cypher = Cypher()
 
 queries = get_all_queries()
 
 # Each Cypher word is a state in the Markov model. We're also adding a "" state; this means there are no previous words
 # (we're at the beginning of the query).
-cypher_words = [""] + cypher_words
+cypher_words = [""] + cypher.words()
 
 # Store the model in a dictionary of dictionaries.
 markov = {i: {j:0 for j in cypher_words} for i in cypher_words}
@@ -15,10 +17,10 @@ for query in queries:
     # Find the functions. This will miss cases where people put a space between the function and the open
     # parenthesis, e.g. LENGTH ([1,2,3]), but oh well.
     # This results in a tuple for each word and its index, e.g. ("RETURN", 5).
-    function_indices = [(word, query.find(" " + word + "(")) for word in FUNCS]
+    function_indices = [(word, query.find(" " + word + "(")) for word in cypher.FUNCTIONS]
 
     # Find the keywords. Make sure they're surrounded by spaces so that we don't grab words within words.
-    keyword_indices = [(word, query.find(" " + word + " ")) for word in KEYWORDS]
+    keyword_indices = [(word, query.find(" " + word + " ")) for word in cypher.KEYWORDS]
 
     # Combine the indexes of the functions and keywords.
     indices = function_indices + keyword_indices
