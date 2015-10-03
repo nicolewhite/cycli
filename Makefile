@@ -5,7 +5,7 @@ clean:
 	rm -rf build dist cycli.egg-info
 
 test:
-	python -m unittest
+	py.test tests
 
 markov:
 	mkdir -p data
