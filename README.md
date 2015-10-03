@@ -45,37 +45,37 @@ Options:
   --help                   Show this message and exit.
 ```
 
-## Features
-
-### Autocomplete
+## Autocomplete
 
 The smart autocompletion suggests node labels when you're drawing a node, relationship types when you're drawing
 a relationship, and properties when working with identifiers. Of course, it also suggests all of the Cypher keywords,
 functions, and predicates.
 
-#### Node Labels
+### Node Labels
 
 ![labels](screenshots/autocomplete-labels.png)
 
-#### Relationship Types
+### Relationship Types
 
 ![rels](screenshots/autocomplete-rels.png)
 
-#### Properties
+### Properties
 
 ![props](screenshots/autocomplete-props.png)
 
-#### Cypher Keywords
+### Cypher Keywords
+
+Cypher keywords are displayed in a probabilistic order based on your most recent keyword.
 
 ![cypher](screenshots/autocomplete-cypher.png)
 
-#### Opening Characters
+### Opening Characters
 
 If you type `(`, `[`, `{`, `"`, or `'`, a matching closing character is automatically placed to the right of your cursor.
 
 ![matching](screenshots/autocomplete-matching.png)
 
-### Syntax Highlighting
+## Syntax Highlighting
 
 Catch syntax errors with the built-in syntax highlighting. The colors were chosen to emulate the syntax highlighting
 available in the Neo4j browser.
