@@ -1,3 +1,6 @@
+import pkg_resources
+import json
+
 class Cypher:
 
     def __init__(self):
@@ -137,5 +140,11 @@ class Cypher:
             "XOR"
         ]
 
+        self.markov = json.loads(open(pkg_resources.resource_filename(__name__, "markov.json")).read())
+
     def words(self):
         return sorted(self.FUNCTIONS + self.KEYWORDS)
+
+    def most_probable_next_keyword(self, last_word):
+        row = self.markov[last_word]
+        return sorted(row, key=row.get, reverse=True)

@@ -46,7 +46,8 @@ class CypherCompleter(Completer):
         elif self.unclosed_strings(all_text):
             return
         elif word:
-            choices = cypher.words()
+            last_cypher_word = self.most_recent_cypher_word(all_text)
+            choices = cypher.most_probable_next_keyword(last_cypher_word)
         else:
             return
 
@@ -89,6 +90,16 @@ class CypherCompleter(Completer):
 
         keep.reverse()
         return "".join(keep)
+
+    def most_recent_cypher_word(self, all_text):
+        text = " " + all_text
+        keyword_indices = [(word, text.rfind(" " + word + " ")) for word in cypher.KEYWORDS]
+        function_indices = [(word, text.rfind(" " + word + "(")) for word in cypher.FUNCTIONS]
+
+        indices = keyword_indices + function_indices
+        most_recent = max(indices, key=lambda i:i[1])[0]
+
+        return most_recent
 
     def most_recent_non_alpha(self, chars):
         chars = list(chars)
