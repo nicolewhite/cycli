@@ -141,3 +141,25 @@ def test_markov_m_after_nothing(completer, complete_event):
 
     assert result[0] == Completion(text="MATCH", start_position=-1)
     assert result[1] == Completion(text="MERGE", start_position=-1)
+
+def test_markov_a_after_where(completer, complete_event):
+    # Out of the words starting with A, AND is most commonly used after WHERE.
+    text = "MATCH (p:Person) WHERE p.born > 1950 A"
+    position = len(text)
+
+    result = list(completer.get_completions(
+        Document(text=text, cursor_position=position),
+        complete_event))
+
+    assert result[0] == Completion(text="AND", start_position=-1)
+
+def test_markov_a_after_return(completer, complete_event):
+    # Out of the words starting with A, AS is most commonly used after RETURN.
+    text = "MATCH (p:Person) RETURN p.name A"
+    position = len(text)
+
+    result = list(completer.get_completions(
+        Document(text=text, cursor_position=position),
+        complete_event))
+
+    assert result[0] == Completion(text="AS", start_position=-1)
