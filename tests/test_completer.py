@@ -129,3 +129,15 @@ def test_markov_w_after_nothing(completer, complete_event):
         complete_event))
 
     assert result[0] == Completion(text="WITH", start_position=-1)
+
+def test_markov_m_after_nothing(completer, complete_event):
+    # Out of the words starting with M, MATCH and MERGE are most commonly the first words in a query, in that order.
+    text = "M"
+    position = len(text)
+
+    result = list(completer.get_completions(
+        Document(text=text, cursor_position=position),
+        complete_event))
+
+    assert result[0] == Completion(text="MATCH", start_position=-1)
+    assert result[1] == Completion(text="MERGE", start_position=-1)

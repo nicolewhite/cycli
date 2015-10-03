@@ -97,8 +97,12 @@ class CypherCompleter(Completer):
         function_indices = [(word, text.rfind(" " + word + "(")) for word in cypher.FUNCTIONS]
 
         indices = keyword_indices + function_indices
-        most_recent = max(indices, key=lambda i:i[1])[0]
 
+        # If no keywords were found, we want to be in the "" state in the Markov model.
+        if not any([i[1] > -1 for i in indices]):
+            return ""
+
+        most_recent = max(indices, key=lambda i:i[1])[0]
         return most_recent
 
     def most_recent_non_alpha(self, chars):
