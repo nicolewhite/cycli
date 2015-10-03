@@ -86,6 +86,7 @@ def get_all_queries():
     urls = list(set(urls))
     urls = [url for url in urls if url]
     raw_urls = [get_raw_url(url) for url in urls]
+    raw_urls = [raw_url for raw_url in raw_urls if raw_url]
 
     queries = []
 
@@ -94,6 +95,7 @@ def get_all_queries():
             queries.extend(get_queries(raw_url))
         except Exception as e:
             print(e)
+            print(raw_url)
             continue
 
     isolated = [isolate_keywords(query) for query in queries]
