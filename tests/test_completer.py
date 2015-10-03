@@ -67,6 +67,16 @@ def test_property_completion(completer, complete_event):
 
     assert result == [Completion(text="name", start_position=-1)]
 
+def test_no_property_completion_in_float(completer, complete_event):
+    text = "RETURN 5."
+    position = len(text)
+
+    result = list(completer.get_completions(
+        Document(text=text, cursor_position=position),
+        complete_event))
+
+    assert result == []
+
 def test_no_completions_while_inside_string(completer, complete_event):
     text = "MATCH (p:Person) WHERE p.name = 'Tom H"
     position = len(text)
