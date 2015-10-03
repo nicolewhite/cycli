@@ -1,6 +1,7 @@
 from cycli.cypher import Cypher
 from misc.graphgist import get_all_queries
 import json
+import re
 
 cypher = Cypher()
 
@@ -14,19 +15,30 @@ cypher_words = [""] + cypher.words()
 markov = {i: {j:0 for j in cypher_words} for i in cypher_words}
 
 for query in queries:
+    # Find the indices of Cypher functions and keywords separately. This results in a list of tuples for each word and its
+    # index, e.g. [('MATCH', 0), ('WHERE', 13), ('RETURN', 29)].
+
     # Find the functions. This will miss cases where people put a space between the function and the open
     # parenthesis, e.g. LENGTH ([1,2,3]), but oh well.
-    # This results in a tuple for each word and its index, e.g. ("RETURN", 5).
-    function_indices = [(word, query.find(" " + word + "(")) for word in cypher.FUNCTIONS]
+    function_indices = []
+
+    for word in cypher.FUNCTIONS:
+        idx = [m.start() for m in re.finditer(" " + word + "\(", query)]
+
+        for i in idx:
+            function_indices.append((word, i))
 
     # Find the keywords. Make sure they're surrounded by spaces so that we don't grab words within words.
-    keyword_indices = [(word, query.find(" " + word + " ")) for word in cypher.KEYWORDS]
+    keyword_indices = []
+
+    for word in cypher.KEYWORDS:
+        idx = [m.start() for m in re.finditer(" " + word + " ", query)]
+
+        for i in idx:
+            keyword_indices.append((word, i))
 
     # Combine the indexes of the functions and keywords.
     indices = function_indices + keyword_indices
-
-    # Only keep words that were found. If a word wasn't found, its index will be -1.
-    indices = [x for x in indices if x[1] > -1]
 
     # Sort the words by the order of their indexes, i.e. the order in which they were found in the query.
     indices.sort(key=lambda tup: tup[1])
@@ -34,7 +46,7 @@ for query in queries:
     # Drop the indexes so that we just have a list of words ordered by their position in the query.
     indices = [x[0] for x in indices]
 
-    # Append an empty string to the beginning; this state means there are no previous keywords.
+    # Append the empty string state to the beginning; this state means there are no previous keywords.
     indices = [""] + indices
 
     for i in range(len(indices) - 1):
