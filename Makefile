@@ -6,3 +6,8 @@ clean:
 
 test:
 	python -m unittest
+
+markov:
+	mkdir -p data
+	python misc/markov.py
+	mv markov.json data/
