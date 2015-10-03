@@ -1,6 +1,9 @@
 from __future__ import unicode_literals
 from prompt_toolkit.completion import Completer, Completion
-from cycli.cypher import cypher_words
+from cycli.cypher import Cypher
+
+
+cypher = Cypher()
 
 
 class CypherCompleter(Completer):
@@ -43,7 +46,7 @@ class CypherCompleter(Completer):
         elif self.unclosed_strings(all_text):
             return
         elif word:
-            choices = cypher_words
+            choices = cypher.words()
         else:
             return
 
