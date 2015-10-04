@@ -1,4 +1,5 @@
 import pkg_resources
+import re
 
 class Cypher:
 
@@ -146,3 +147,17 @@ class Cypher:
 
     def most_probable_next_keyword(self, current_keyword):
         return [x[0] for x in self.markov[current_keyword]]
+
+    def is_a_write_query(self, query):
+        query = query.upper()
+        update_words = ["CREATE", "MERGE", "DELETE", "SET", "REMOVE", "DROP"]
+
+        unquoted = re.findall('(?:^|"|\'|`)([^"|\'|`]*)(?:$|"|\'|`)', query, flags=re.DOTALL)
+        unquoted = " " + "".join(unquoted) + " "
+        unquoted = unquoted.replace("\n", " ")
+        unquoted = unquoted.replace("\r", " ")
+        unquoted = unquoted.replace("\t", " ")
+
+        sightings = [unquoted.find(" " + word + " ") for word in update_words]
+
+        return any([x > -1 for x in sightings])

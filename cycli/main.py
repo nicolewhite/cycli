@@ -21,6 +21,10 @@ from cycli.buffer import CypherBuffer
 from cycli.binder import CypherBinder
 from cycli.neo4j import Neo4j
 from cycli.table import pretty_print_table
+from cycli.cypher import Cypher
+
+
+cypher = Cypher()
 
 
 def get_tokens(x):
@@ -128,11 +132,7 @@ class Cycli:
         # Check to see if the user is in run-n mode.
         m = re.match('run-([0-9]+) (.*)', query, re.DOTALL)
 
-        # Check for update keywords in query string not wrapped in quotes.
-        unquoted = re.findall('(?:^|"|\')([^"|\']*)(?:$|"|\')', query, flags=re.DOTALL)
-        unquoted = "".join(unquoted)
-
-        if re.search("(create|merge|delete|set|remove|drop)", unquoted, flags=re.IGNORECASE) and self.read_only:
+        if cypher.is_a_write_query(query) and self.read_only:
             print("Query aborted. You are in read-only mode.")
 
         elif query in ["quit", "exit"]:
