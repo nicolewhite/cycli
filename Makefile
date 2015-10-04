@@ -10,4 +10,4 @@ test:
 markov:
 	mkdir -p data
 	python misc/markov.py
-	mv markov.json cycli/
+	mv markov.txt cycli/

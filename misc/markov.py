@@ -1,6 +1,5 @@
 from cycli.cypher import Cypher
 from misc.graphgist import get_all_queries
-import json
 import re
 
 cypher = Cypher()
@@ -12,7 +11,7 @@ queries = get_all_queries()
 cypher_words = [""] + cypher.words()
 
 # Store the model in a dictionary of dictionaries.
-markov = {i: {j:0 for j in cypher_words} for i in cypher_words}
+markov = {i: {j:0.0 for j in cypher_words} for i in cypher_words}
 
 for query in queries:
     # Find the indices of Cypher functions and keywords separately. This results in a list of tuples for each word and its
@@ -64,6 +63,11 @@ for key, value in markov.items():
     if denominator > 0:
         markov[key] = {i:j / denominator for i, j in value.items()}
 
-# Write the Markov model to a json file.
-with open("markov.json", "w") as file:
-    json.dump(markov, file)
+# Convert dictionaries to list of tuples so that they can be stored in order.
+for key, value in markov.items():
+    ordered = sorted(markov[key].items(), key=lambda x:x[1], reverse=True)
+    markov[key] = ordered
+
+# Write the Markov model to a file.
+with open("markov.txt", "w") as file:
+    file.write(repr(markov))
