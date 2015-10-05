@@ -49,6 +49,7 @@ def get_queries(raw_url):
 def remove_strings(query):
     query = re.sub(r"'.*?'", "", query)
     query = re.sub(r'".*?"', "", query)
+    query = re.sub(r'`.*?`', "", query)
     return query
 
 def remove_comments(query):
