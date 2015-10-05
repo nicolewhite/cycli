@@ -60,7 +60,10 @@ for query in queries:
 for key, value in markov.items():
     denominator = sum(value.values())
 
-    if denominator > 0:
+    if denominator == 0:
+        # Absorbing state.
+        markov[key] = {i: 1.0 if i == key else 0.0 for i in value.keys()}
+    elif denominator > 0:
         markov[key] = {i:j / denominator for i, j in value.items()}
 
 # Convert dictionaries to list of tuples so that they can be stored in order.
