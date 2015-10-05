@@ -67,9 +67,9 @@ for key, value in markov.items():
         markov[key] = {i:j / denominator for i, j in value.items()}
 
 # Convert dictionaries to list of tuples so that they can be stored in order.
-for key, value in markov.items():
-    ordered = sorted(markov[key].items(), key=lambda x:x[1], reverse=True)
-    markov[key] = ordered
+for word in markov.keys():
+    ordered = sorted(markov[word].items(), key=lambda x:x[1], reverse=True)
+    markov[word] = ordered
 
 # Write the Markov model to a file.
 with open("markov.txt", "w") as file:
