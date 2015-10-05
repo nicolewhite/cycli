@@ -20,7 +20,7 @@ class CypherCompleter(Completer):
 
         all_text = document.text_before_cursor
 
-        if not chars_before_cursor:
+        if not chars_before_cursor or self.unclosed_strings(all_text):
             return
 
         word = self.find_last_word(chars_before_cursor)
@@ -43,8 +43,6 @@ class CypherCompleter(Completer):
 
                 else:
                     return
-        elif self.unclosed_strings(all_text):
-            return
         elif word:
             last_cypher_word = self.most_recent_cypher_word(all_text)
             choices = cypher.most_probable_next_keyword(last_cypher_word)
