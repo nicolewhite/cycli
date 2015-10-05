@@ -8,6 +8,6 @@ test:
 	py.test tests
 
 markov:
-	mkdir -p data
 	python misc/markov.py
-	mv markov.txt cycli/
+	echo "markov = $(<markov.txt)" > cycli/markov.py
+	mv markov.txt misc

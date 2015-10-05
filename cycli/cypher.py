@@ -1,4 +1,4 @@
-import pkg_resources
+from cycli.markov import markov
 import re
 
 class Cypher:
@@ -140,7 +140,7 @@ class Cypher:
             "XOR"
         ]
 
-        self.markov = eval(open(pkg_resources.resource_filename(__name__, "markov.txt")).read())
+        self.markov = markov
 
     def words(self):
         return sorted(self.FUNCTIONS + self.KEYWORDS)

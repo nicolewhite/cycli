@@ -11,7 +11,6 @@ setup(name='cycli',
       author_email='nicole@neotechnology.com',
       license='MIT',
       packages=['cycli'],
-      package_data={'cycli': ['markov.txt']},
       install_requires=[
         'click==4.1',
         'prompt-toolkit==0.43',
