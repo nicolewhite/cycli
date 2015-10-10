@@ -65,7 +65,7 @@ functions, and predicates.
 
 ### Cypher Keywords
 
-Cypher keywords are displayed in a probabilistic order based on your most recent keyword.
+Cypher keywords are displayed in a [probabilistic order based on your most recent keyword](http://nicolewhite.github.io/2015/10/05/improving-cycli-autocomplete-markov-chains.html).
 
 ![cypher](screenshots/autocomplete-cypher.png)
 
