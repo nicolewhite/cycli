@@ -5,7 +5,7 @@ import click
 import re
 
 from prompt_toolkit import Application, CommandLineInterface, AbortAction
-from prompt_toolkit.history import History
+from prompt_toolkit.history import FileHistory
 from prompt_toolkit.shortcuts import create_default_layout, create_eventloop
 from prompt_toolkit.filters import Always
 from pygments.token import Token
@@ -104,7 +104,7 @@ class Cycli:
         )
 
         buff = CypherBuffer(
-            history=History(),
+            history=FileHistory(filename=os.path.expanduser('~/.cycli_history')),
             completer=completer,
             complete_while_typing=Always()
         )
