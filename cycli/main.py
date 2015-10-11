@@ -3,6 +3,7 @@ from __future__ import unicode_literals, print_function
 import sys
 import click
 import re
+import os
 
 from prompt_toolkit import Application, CommandLineInterface, AbortAction
 from prompt_toolkit.history import FileHistory
