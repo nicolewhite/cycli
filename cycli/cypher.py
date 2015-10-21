@@ -63,6 +63,7 @@ class Cypher:
             "SIGN",
             "SIN",
             "SINGLE",
+            "SIZE",
             "SPLIT",
             "SQRT",
             "STARTNODE",
