@@ -36,9 +36,9 @@ class CypherCompleter(Completer):
             loc = chars_before_cursor.find(".")
 
             if loc:
-                prev_char = chars_before_cursor[loc - 1]
+                identifier = chars_before_cursor[:loc]
 
-                if prev_char.isalpha():
+                if not identifier.isdigit():
                     choices = self.properties
 
                 else:
