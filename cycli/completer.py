@@ -17,13 +17,12 @@ class CypherCompleter(Completer):
 
     def get_completions(self, document, complete_event):
         chars_before_cursor = document.get_word_before_cursor(WORD=True)
-
         all_text = document.text_before_cursor
+        lookup = self.find_last_alphabetic_chunk(chars_before_cursor)
+        choices = []
 
         if not chars_before_cursor or self.unclosed_strings(all_text):
             return
-
-        word = self.find_last_word(chars_before_cursor)
 
         if self.most_recent_non_alpha(chars_before_cursor) == ":":
             if self.looking_for(chars_before_cursor) == "label":
@@ -40,19 +39,16 @@ class CypherCompleter(Completer):
 
                 if not identifier.isdigit():
                     choices = self.properties
-
                 else:
                     return
-        elif word:
+        else:
             last_cypher_word = self.most_recent_cypher_word(all_text)
             choices = cypher.most_probable_next_keyword(last_cypher_word)
-        else:
-            return
 
-        choices = self.find_matches(word, choices)
+        completions = self.find_matches(lookup, choices)
 
-        for completion in choices:
-            yield Completion(completion, -len(word))
+        for completion in completions:
+            yield Completion(completion, -len(lookup))
 
     def find_matches(self, word, choices):
         word = word.lower()
@@ -74,7 +70,7 @@ class CypherCompleter(Completer):
         d = dict(label=paren, relationship=bracket, curly=curly)
         return max(d, key=d.get)
 
-    def find_last_word(self, chars):
+    def find_last_alphabetic_chunk(self, chars):
         chars = list(chars)
         chars.reverse()
 
