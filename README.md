@@ -1,10 +1,14 @@
 # cycli [![Build Status](https://travis-ci.org/nicolewhite/cycli.svg?branch=master)](https://travis-ci.org/nicolewhite/cycli) [![PyPi version](https://badge.fury.io/py/cycli.svg)](https://pypi.python.org/pypi/cycli/)
 
+A command-line interface for [Neo4j](http://neo4j.com/)'s graph query language, Cypher.
+
 <p align="center">
   <img src="screenshots/output.gif" />
 </p>
 
 ## Install
+
+If you haven't already, [download](http://neo4j.com/download/other-releases/) and install Neo4j. Then, install `cycli`:
 
 ```
 $ pip install cycli
@@ -12,7 +16,7 @@ $ pip install cycli
 
 ## Start
 
-To start, simply execute `cycli` from your terminal.
+To start, simply execute `cycli` from your terminal. Neo4j needs to be running.
 
 ```
 $ cycli
