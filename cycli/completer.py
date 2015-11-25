@@ -41,9 +41,11 @@ class CypherCompleter(Completer):
                     choices = self.properties
                 else:
                     return
-        else:
+        elif chars_before_cursor[-1].isalpha():
             last_cypher_word = self.most_recent_cypher_word(all_text)
             choices = cypher.most_probable_next_keyword(last_cypher_word)
+        else:
+            return
 
         completions = self.find_matches(lookup, choices)
 
