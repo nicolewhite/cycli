@@ -177,7 +177,7 @@ class Cycli:
                 print("Set parameters with export key=value.")
             else:
                 params = query.replace("export ", "").strip()
-                key, value = params.split("=")
+                key, value = params.split("=", 1)
                 key = key.strip()
                 value = value.strip()
 
