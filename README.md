@@ -97,12 +97,13 @@ Execute queries by ending them with a semicolon and pressing enter or by pressin
 Type "help" to see a table of keywords / keystrokes and their descriptions.
 
 Keyword            | Description
--------------------|--------------------------------------------------------------
+-------------------+--------------------------------------------------------------
 quit               | Exit cycli.
 exit               | Exit cycli.
 help               | Display this text.
 refresh            | Refresh schema cache.
 run-n              | Run a Cypher query n times.
+export             | Set a parameter with export key=value.
 schema             | Display indexes, constraints, labels, and relationship types.
 schema-indexes     | Display indexes.
 schema-constraints | Display constraints.
@@ -164,6 +165,36 @@ Run 4: 10 ms
 Run 5: 9 ms
 
 Total duration: 79 ms
+```
+
+### `export`
+
+Set parameters with `export key=value`.
+
+```
+> export name="Tom Hanks"
+> export year=2005
+> env
+name=Tom Hanks
+year=2005
+> MATCH (p:Person {name:{name}})-[:ACTED_IN]->(m:Movie)
+WHERE m.released > {year}
+RETURN m.title, m.released;
+   | m.title              | m.released
+---+----------------------+------------
+ 1 | Charlie Wilson's War |       2007
+ 2 | Cloud Atlas          |       2012
+ 3 | The Da Vinci Code    |       2006
+
+12 ms
+```
+
+The `value` is evaluated with Python's `eval`, so you can also do things like this:
+
+```
+> export evens=[x for x in range(10) if x % 2 == 0]
+> env["evens"]
+[0, 2, 4, 6, 8]
 ```
 
 ## Credits
