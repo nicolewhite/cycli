@@ -77,6 +77,16 @@ def test_no_property_completion_in_float(completer, complete_event):
 
     assert result == []
 
+def test_no_property_completion_in_float_after_export(completer, complete_event):
+    text = "export k=5."
+    position = len(text)
+
+    result = list(completer.get_completions(
+        Document(text=text, cursor_position=position),
+        complete_event))
+
+    assert result == []
+
 def test_no_cypher_completions_after_non_alpha(completer, complete_event):
     text = "MATCH p WHERE p.name ="
     position = len(text)

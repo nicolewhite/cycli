@@ -160,6 +160,33 @@ class Cycli:
         elif query == "schema-rels":
             self.neo4j.print_relationship_types()
 
+        elif query.startswith("env"):
+            if query == "env":
+                for key, value in self.neo4j.parameters.items():
+                    print("{0}={1}".format(key, value))
+            else:
+                key = query[3:]
+                key = key.strip("'\"[]")
+                value = self.neo4j.parameters.get(key)
+
+                if value is not None:
+                    print(value)
+
+        elif query.startswith("export "):
+            if "=" not in query:
+                print("Set parameters with export key=value.")
+            else:
+                params = query.replace("export ", "").strip()
+                key, value = params.split("=")
+                key = key.strip()
+                value = value.strip()
+
+                try:
+                    value = eval(value)
+                    self.neo4j.update_parameters(key, value)
+                except Exception as e:
+                    print(e)
+
         else:
             count = int(m.group(1)) if m else 1
             query = m.group(2) if m else query
@@ -203,6 +230,7 @@ def print_help():
         ["help", "Display this text."],
         ["refresh", "Refresh schema cache."],
         ["run-n", "Run a Cypher query n times."],
+        ["export", "Set a parameter with export key=value."],
         ["schema", "Display indexes, constraints, labels, and relationship types."],
         ["schema-indexes", "Display indexes."],
         ["schema-constraints", "Display constraints."],

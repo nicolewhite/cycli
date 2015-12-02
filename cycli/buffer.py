@@ -25,6 +25,8 @@ class CypherBuffer(Buffer):
                 text == "schema-constraints",
                 text == "schema-indexes",
                 text == "schema-labels",
-                text == "schema-rels"
+                text == "schema-rels",
+                text.startswith("env"),
+                text.startswith("export ")
             ]
         )

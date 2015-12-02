@@ -11,6 +11,8 @@ class Neo4j:
     __constraints = None
     __indexes = None
 
+    parameters = {}
+
     def __init__(self, host, port, username=None, password=None, ssl=False):
         self.username = username
         self.password = password
@@ -32,7 +34,7 @@ class Neo4j:
         tx = self.graph.cypher.begin()
 
         try:
-            tx.append(query)
+            tx.append(query, parameters=self.parameters)
             results = tx.process()
             tx.commit()
         except Exception as e:
@@ -92,6 +94,9 @@ class Neo4j:
             self.__indexes = indexes
 
         return self.__indexes
+
+    def update_parameters(self, key, value):
+        self.parameters[key] = value
 
     def refresh(self):
         self.__labels = None
