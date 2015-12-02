@@ -97,7 +97,7 @@ Execute queries by ending them with a semicolon and pressing enter or by pressin
 Type "help" to see a table of keywords / keystrokes and their descriptions.
 
 Keyword            | Description
--------------------+--------------------------------------------------------------
+-------------------|--------------------------------------------------------------
 quit               | Exit cycli.
 exit               | Exit cycli.
 help               | Display this text.
