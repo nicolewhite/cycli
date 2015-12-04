@@ -1,48 +1,51 @@
-import requests
-from py2neo import Graph, authenticate, Resource
+from py2neo import Graph, authenticate, Unauthorized
+from py2neo.packages.httpstream import SocketError, http
 from datetime import datetime
 from cycli.table import pretty_print_table
 
 
-class Neo4j:
+class AuthError(Exception):
+    pass
 
-    __relationship_types = None
-    __labels = None
-    __constraints = None
-    __indexes = None
 
-    parameters = {}
+class ConnectionError(Exception):
+    pass
 
-    def __init__(self, host, port, username=None, password=None, ssl=False):
-        self.username = username
-        self.password = password
 
-        self.host_port = "{host}:{port}".format(host=host, port=port)
-        self.url = "{protocol}{host_port}/db/data/".format(protocol="https://" if ssl else "http://",
-                                                           host_port=self.host_port)
+class Py2neoClient(object):
 
-    def connect(self):
-        if self.username and self.password:
-            authenticate(self.host_port, self.username, self.password)
+    def __init__(self, host, port, username=None, password=None, ssl=False, timeout=None):
+        if timeout:
+            http.socket_timeout = timeout
 
-        graph = Graph(self.url)
-        self.graph = graph
+        host_port = "{host}:{port}".format(host=host, port=port)
+        uri = "{scheme}://{host_port}/db/data/".format(scheme="https" if ssl else "http",
+                                                       host_port=host_port)
+        if username and password:
+            authenticate(host_port, username, password)
+        self.graph = Graph(uri)
+        try:
+            self.neo4j_version = self.graph.neo4j_version
+        except Unauthorized:
+            raise AuthError(uri)
+        except SocketError:
+            raise ConnectionError(uri)
 
-    def cypher(self, query):
+    def cypher(self, statement, parameters):
         error = False
         start = datetime.now()
         tx = self.graph.cypher.begin()
 
         try:
-            tx.append(query, parameters=self.parameters)
+            tx.append(statement, parameters)
             results = tx.process()
             tx.commit()
-        except Exception as e:
-            results = e
-            error = True
         except KeyboardInterrupt:
             tx.rollback()
             results = ""
+            error = True
+        except Exception as e:
+            results = e
             error = True
 
         end = datetime.now()
@@ -51,48 +54,56 @@ class Neo4j:
         return {"results": results, "duration": duration, "error": error}
 
     def labels(self):
-        if not self.__labels:
-            labels_resource = Resource(self.graph.uri.string + "labels")
-            self.__labels = sorted(list(frozenset(labels_resource.get().content)))
+        return sorted(self.graph.resource.resolve("labels").get().content)
 
+    def relationship_types(self):
+        return sorted(self.graph.resource.resolve("relationship/types").get().content)
+
+    def constraints(self):
+        return sorted(self.graph.resource.resolve("schema/constraint").get().content)
+
+    def indexes(self):
+        return sorted(self.graph.resource.resolve("schema/index").get().content)
+
+    def property_keys(self):
+        return sorted(self.graph.resource.resolve("propertykeys").get().content)
+
+
+class Neo4j:
+
+    Client = Py2neoClient
+
+    __relationship_types = None
+    __labels = None
+    __constraints = None
+    __indexes = None
+
+    parameters = {}
+
+    def __init__(self, host, port, username=None, password=None, ssl=False, timeout=None):
+        self.__client = self.Client(host, port, username, password, ssl, timeout)
+
+    def cypher(self, query):
+        return self.__client.cypher(query, self.parameters)
+
+    def labels(self):
+        if not self.__labels:
+            self.__labels = self.__client.labels()
         return self.__labels
 
     def relationship_types(self):
         if not self.__relationship_types:
-            relationship_types_resource = Resource(self.graph.uri.string + "relationship/types")
-            self.__relationship_types = sorted(list(frozenset(relationship_types_resource.get().content)))
-
+            self.__labels = self.__client.relationship_types()
         return self.__relationship_types
 
     def constraints(self):
         if not self.__constraints:
-            constraints = []
-            constraints_resource = Resource(self.graph.uri.string + "schema/constraint")
-            constraints_content = list(constraints_resource.get().content)
-
-            for i in constraints_content:
-                constraint = dict(i)
-                constraint["property_keys"] = list(constraint["property_keys"])
-                constraints.append(constraint)
-
-            self.__constraints = constraints
-
+            self.__constraints = self.__client.constraints()
         return self.__constraints
 
     def indexes(self):
         if not self.__indexes:
-            indexes = []
-            for label in self.labels():
-                index_resource = Resource(self.graph.uri.string + "schema/index/" + label)
-                indexes_content = list(index_resource.get().content)
-
-                for i in indexes_content:
-                    index = dict(i)
-                    index["property_keys"] = list(index["property_keys"])
-                    indexes.append(index)
-
-            self.__indexes = indexes
-
+            self.__indexes = self.__client.indexes()
         return self.__indexes
 
     def update_parameters(self, key, value):
@@ -152,7 +163,4 @@ class Neo4j:
         pretty_print_table(headers, rows)
 
     def properties(self):
-        url = self.url + "propertykeys"
-        r = requests.get(url, auth=(self.username, self.password))
-        props = r.json()
-        return sorted(props)
+        return self.__client.property_keys()
