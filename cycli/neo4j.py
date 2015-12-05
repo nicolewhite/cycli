@@ -34,7 +34,7 @@ class Neo4j:
 
     def relationship_types(self):
         if not self.__relationship_types:
-            self.__labels = self.__client.relationship_types()
+            self.__relationship_types = self.__client.relationship_types()
         return self.__relationship_types
 
     def constraints(self):
