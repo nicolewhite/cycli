@@ -1,5 +1,3 @@
-from py2neo import Graph, authenticate, Unauthorized
-from py2neo.packages.httpstream import SocketError, http
 from datetime import datetime
 from cycli.table import pretty_print_table
 
@@ -12,66 +10,9 @@ class ConnectionError(Exception):
     pass
 
 
-class Py2neoClient(object):
-
-    def __init__(self, host, port, username=None, password=None, ssl=False, timeout=None):
-        if timeout:
-            http.socket_timeout = timeout
-
-        host_port = "{host}:{port}".format(host=host, port=port)
-        uri = "{scheme}://{host_port}/db/data/".format(scheme="https" if ssl else "http",
-                                                       host_port=host_port)
-        if username and password:
-            authenticate(host_port, username, password)
-        self.graph = Graph(uri)
-        try:
-            self.neo4j_version = self.graph.neo4j_version
-        except Unauthorized:
-            raise AuthError(uri)
-        except SocketError:
-            raise ConnectionError(uri)
-
-    def cypher(self, statement, parameters):
-        error = False
-        start = datetime.now()
-        tx = self.graph.cypher.begin()
-
-        try:
-            tx.append(statement, parameters)
-            results = tx.process()
-            tx.commit()
-        except KeyboardInterrupt:
-            tx.rollback()
-            results = ""
-            error = True
-        except Exception as e:
-            results = e
-            error = True
-
-        end = datetime.now()
-        duration = int(round((end - start).total_seconds() * 1000))
-
-        return {"results": results, "duration": duration, "error": error}
-
-    def labels(self):
-        return sorted(self.graph.resource.resolve("labels").get().content)
-
-    def relationship_types(self):
-        return sorted(self.graph.resource.resolve("relationship/types").get().content)
-
-    def constraints(self):
-        return sorted(self.graph.resource.resolve("schema/constraint").get().content)
-
-    def indexes(self):
-        return sorted(self.graph.resource.resolve("schema/index").get().content)
-
-    def property_keys(self):
-        return sorted(self.graph.resource.resolve("propertykeys").get().content)
-
-
 class Neo4j:
 
-    Client = Py2neoClient
+    Client = None
 
     __relationship_types = None
     __labels = None
@@ -164,3 +105,123 @@ class Neo4j:
 
     def properties(self):
         return self.__client.property_keys()
+
+
+try:
+    from neo4j.v1 import GraphDatabase
+    from json import loads
+    try:
+        from urllib.request import urlopen
+    except ImportError:
+        from urllib import urlopen
+
+    class BoltClient(object):
+
+        def __init__(self, host, port, username=None, password=None, ssl=False, timeout=None):
+            bolt_uri = "bolt://{host}:{port}".format(host=host, port=port)
+            if username and password:
+                # todo: set auth header
+                pass
+            self.http_uri = "http://{host}:7474/db/data/".format(host=host, port=port)
+            driver = GraphDatabase.driver(bolt_uri)
+            self.session = driver.session()
+
+        def cypher(self, statement, parameters):
+            error = False
+            start = datetime.now()
+            tx = self.session.begin_transaction()
+
+            try:
+                results = tx.run(statement, parameters)
+                tx.commit()
+            except KeyboardInterrupt:
+                tx.rollback()
+                results = ""
+                error = True
+            except Exception as e:
+                results = e
+                error = True
+
+            end = datetime.now()
+            duration = int(round((end - start).total_seconds() * 1000))
+
+            return {"results": results, "duration": duration, "error": error}
+
+        def labels(self):
+            return sorted(loads(urlopen(self.http_uri + "labels").read()))
+
+        def relationship_types(self):
+            return sorted(loads(urlopen(self.http_uri + "relationship/types").read()))
+
+        def constraints(self):
+            return sorted(loads(urlopen(self.http_uri + "schema/constraint").read()))
+
+        def indexes(self):
+            return sorted(loads(urlopen(self.http_uri + "schema/index").read()))
+
+        def property_keys(self):
+            return sorted(loads(urlopen(self.http_uri + "propertykeys").read()))
+
+    Neo4j.Client = BoltClient
+
+except ImportError:
+    from py2neo import Graph, authenticate, Unauthorized
+    from py2neo.packages.httpstream import SocketError, http
+
+    class Py2neoClient(object):
+
+        def __init__(self, host, port, username=None, password=None, ssl=False, timeout=None):
+            if timeout:
+                http.socket_timeout = timeout
+
+            host_port = "{host}:{port}".format(host=host, port=port)
+            uri = "{scheme}://{host_port}/db/data/".format(scheme="https" if ssl else "http",
+                                                           host_port=host_port)
+            if username and password:
+                authenticate(host_port, username, password)
+            self.graph = Graph(uri)
+            try:
+                self.neo4j_version = self.graph.neo4j_version
+            except Unauthorized:
+                raise AuthError(uri)
+            except SocketError:
+                raise ConnectionError(uri)
+
+        def cypher(self, statement, parameters):
+            error = False
+            start = datetime.now()
+            tx = self.graph.cypher.begin()
+
+            try:
+                tx.append(statement, parameters)
+                results = tx.process()
+                tx.commit()
+            except KeyboardInterrupt:
+                tx.rollback()
+                results = ""
+                error = True
+            except Exception as e:
+                results = e
+                error = True
+
+            end = datetime.now()
+            duration = int(round((end - start).total_seconds() * 1000))
+
+            return {"results": results, "duration": duration, "error": error}
+
+        def labels(self):
+            return sorted(self.graph.resource.resolve("labels").get().content)
+
+        def relationship_types(self):
+            return sorted(self.graph.resource.resolve("relationship/types").get().content)
+
+        def constraints(self):
+            return sorted(self.graph.resource.resolve("schema/constraint").get().content)
+
+        def indexes(self):
+            return sorted(self.graph.resource.resolve("schema/index").get().content)
+
+        def property_keys(self):
+            return sorted(self.graph.resource.resolve("propertykeys").get().content)
+
+    Neo4j.Client = Py2neoClient
