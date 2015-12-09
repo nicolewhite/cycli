@@ -1,16 +1,17 @@
 from __future__ import unicode_literals, print_function
 
 import sys
-import click
 import re
 import os
+import csv
+from datetime import datetime
 
+import click
 from prompt_toolkit import Application, CommandLineInterface, AbortAction
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.shortcuts import create_default_layout, create_eventloop
 from prompt_toolkit.filters import Always
 from pygments.token import Token
-
 from py2neo.error import Unauthorized
 from py2neo.packages.httpstream import SocketError, http
 
@@ -23,7 +24,6 @@ from cycli.binder import CypherBinder
 from cycli.neo4j import Neo4j
 from cycli.table import pretty_print_table
 from cycli.cypher import Cypher
-
 
 cypher = Cypher()
 
@@ -54,6 +54,19 @@ class Cycli:
 
         if not error:
             self.logfile.write("{} ms\n\n".format(duration))
+
+    @staticmethod
+    def write_to_csvfile(data):
+        filename = "cycli {}.csv".format(datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))
+
+        with open(filename, "wt") as csvfile:
+            csvwriter = csv.writer(csvfile)
+            csvwriter.writerow(data.columns)
+
+            for row in data:
+                csvwriter.writerow(row)
+
+        csvfile.close()
 
     def run(self):
         neo4j = Neo4j(self.host, self.port, self.username, self.password, self.ssl)
@@ -131,7 +144,8 @@ class Cycli:
 
     def handle_query(self, query):
         # Check to see if the user is in run-n mode.
-        m = re.match('run-([0-9]+) (.*)', query, re.DOTALL)
+        run_n = re.match('run-([0-9]+) (.*)', query, re.DOTALL)
+        export_to_csv = query.startswith("csv ")
 
         if cypher.is_a_write_query(query) and self.read_only:
             print("Query aborted. You are in read-only mode.")
@@ -188,8 +202,9 @@ class Cycli:
                     print(e)
 
         else:
-            count = int(m.group(1)) if m else 1
-            query = m.group(2) if m else query
+            count = int(run_n.group(1)) if run_n else 1
+            query = run_n.group(2) if run_n else query
+            query = query[4:] if export_to_csv else query
 
             if count <= 0 or not query:
                 raise Exception
@@ -208,16 +223,19 @@ class Cycli:
                 print(results)
 
                 if not error:
-                    ms = "Run {}: {} ms\n".format(index + 1, duration) if m else "{} ms".format(duration)
+                    ms = "Run {}: {} ms\n".format(index + 1, duration) if run_n else "{} ms".format(duration)
                     print(ms)
 
                 if self.logfile:
                     self.write_to_logfile(query, response)
 
+                if export_to_csv and not error:
+                    self.write_to_csvfile(results[0])
+
                 total_duration += duration
                 index += 1
 
-            if m and not error:
+            if run_n and not error:
                 print("Total duration: {} ms".format(total_duration))
 
 
