@@ -57,7 +57,7 @@ class Cycli:
 
     @staticmethod
     def write_to_csvfile(data):
-        filename = "cycli {}.csv".format(datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))
+        filename = "cycli {}.csv".format(datetime.now().strftime("%Y-%m-%d at %I.%M.%S %p"))
 
         with open(filename, "wt") as csvfile:
             csvwriter = csv.writer(csvfile)
@@ -143,9 +143,8 @@ class Cycli:
             print("Goodbye!")
 
     def handle_query(self, query):
-        # Check to see if the user is in run-n mode.
         run_n = re.match('run-([0-9]+) (.*)', query, re.DOTALL)
-        export_to_csv = query.startswith("csv ")
+        save_csv = query.startswith("save-csv ")
 
         if cypher.is_a_write_query(query) and self.read_only:
             print("Query aborted. You are in read-only mode.")
@@ -204,7 +203,7 @@ class Cycli:
         else:
             count = int(run_n.group(1)) if run_n else 1
             query = run_n.group(2) if run_n else query
-            query = query[4:] if export_to_csv else query
+            query = query[len("save-csv "):] if save_csv else query
 
             if count <= 0 or not query:
                 raise Exception
@@ -229,7 +228,7 @@ class Cycli:
                 if self.logfile:
                     self.write_to_logfile(query, response)
 
-                if export_to_csv and not error:
+                if save_csv and not error:
                     self.write_to_csvfile(results[0])
 
                 total_duration += duration
