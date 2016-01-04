@@ -5,4 +5,4 @@ python:
   - "3.4"
 
 script:
-  - make test
+  - make test_all

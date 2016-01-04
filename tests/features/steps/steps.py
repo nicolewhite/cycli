@@ -8,7 +8,7 @@ def expect_exact(context, expected):
 
 @given(u"I start cycli")
 def step_start_cycli(context):
-    context.cli = pexpect.spawnu("cycli")
+    context.cli = pexpect.spawnu("cycli -u neo4j -p password")
 
 @given(u"The prompt is visible")
 def step_prompt_visible(context):
