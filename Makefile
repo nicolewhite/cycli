@@ -4,8 +4,13 @@ install: clean
 clean:
 	rm -rf build dist cycli.egg-info
 
-test:
+unit:
 	py.test tests
+
+features:
+	behave tests/features
+
+test: unit features
 
 markov:
 	python misc/markov.py
