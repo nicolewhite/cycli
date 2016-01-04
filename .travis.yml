@@ -1,8 +1,10 @@
 language: python
-
+before_install:
+  - make download_neo4j
+install:
+  - pip install . pytest mock behave pexpect
 python:
   - "2.7"
   - "3.4"
-
 script:
   - make test_all
