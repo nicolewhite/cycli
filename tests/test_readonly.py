@@ -1,56 +1,67 @@
-from unittest import TestCase, main
-from cycli.cypher import Cypher
+import pytest
 
-cypher = Cypher()
 
-class TestReadOnly(TestCase):
-    def test_delete(self):
-        query = "MATCH n DELETE n"
-        self.assertTrue(cypher.is_a_write_query(query))
+@pytest.fixture
+def cypher():
+    from cycli.cypher import Cypher
+    return Cypher()
 
-    def test_merge(self):
-        query = "MERGE n RETURN n"
-        self.assertTrue(cypher.is_a_write_query(query))
 
-    def test_remove(self):
-        query = "MATCH n REMOVE n:Label"
-        self.assertTrue(cypher.is_a_write_query(query))
+def test_delete(cypher):
+    query = "MATCH n DELETE n"
+    assert cypher.is_a_write_query(query)
 
-    def test_set(self):
-        query = "MATCH n SET n.name = 'Hello'"
-        self.assertTrue(cypher.is_a_write_query(query))
 
-    def test_drop(self):
-        query = "DROP CONSTRAINT ON"
-        self.assertTrue(cypher.is_a_write_query(query))
+def test_merge(cypher):
+    query = "MERGE n RETURN n"
+    assert cypher.is_a_write_query(query)
 
-    def test_create(self):
-        query = "CREATE n"
-        self.assertTrue(cypher.is_a_write_query(query))
 
-    def test_identifier(self):
-        query = "MATCH (asset:Something) RETURN asset"
-        self.assertFalse(cypher.is_a_write_query(query))
+def test_remove(cypher):
+    query = "MATCH n REMOVE n:Label"
+    assert cypher.is_a_write_query(query)
 
-    def test_node_label(self):
-        query = "MATCH (a:Asset) RETURN a"
-        self.assertFalse(cypher.is_a_write_query(query))
 
-    def test_rel_type(self):
-        query = "MATCH (p:Person)-[:DELETE]->(m:Movie) RETURN p, m"
-        self.assertFalse(cypher.is_a_write_query(query))
+def test_set(cypher):
+    query = "MATCH n SET n.name = 'Hello'"
+    assert cypher.is_a_write_query(query)
 
-    def test_double_quotes(self):
-        query = 'MATCH n WHERE n.name = " DELETE ME " RETURN n'
-        self.assertFalse(cypher.is_a_write_query(query))
 
-    def test_single_quotes(self):
-        query = "MATCH n WHERE n.name = ' DELETE SET REMOVE ' RETURN n"
-        self.assertFalse(cypher.is_a_write_query(query))
+def test_drop(cypher):
+    query = "DROP CONSTRAINT ON"
+    assert cypher.is_a_write_query(query)
 
-    def test_back_ticks(self):
-        query = "MATCH n WHERE n.`delete set match remove` = 'Tom' RETURN n"
-        self.assertFalse(cypher.is_a_write_query(query))
 
-if __name__ == "__main__":
-  main()
+def test_create(cypher):
+    query = "CREATE n"
+    assert cypher.is_a_write_query(query)
+
+
+def test_identifier(cypher):
+    query = "MATCH (asset:Something) RETURN asset"
+    assert cypher.is_a_write_query(query) is False
+
+
+def test_node_label(cypher):
+    query = "MATCH (a:Asset) RETURN a"
+    assert cypher.is_a_write_query(query) is False
+
+
+def test_rel_type(cypher):
+    query = "MATCH (p:Person)-[:DELETE]->(m:Movie) RETURN p, m"
+    assert cypher.is_a_write_query(query) is False
+
+
+def test_double_quotes(cypher):
+    query = 'MATCH n WHERE n.name = " DELETE ME " RETURN n'
+    assert cypher.is_a_write_query(query) is False
+
+
+def test_single_quotes(cypher):
+    query = "MATCH n WHERE n.name = ' DELETE SET REMOVE ' RETURN n"
+    assert cypher.is_a_write_query(query) is False
+
+
+def test_back_ticks(cypher):
+    query = "MATCH n WHERE n.`delete set match remove` = 'Tom' RETURN n"
+    assert cypher.is_a_write_query(query) is False
