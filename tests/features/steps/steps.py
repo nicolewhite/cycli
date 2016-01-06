@@ -57,3 +57,15 @@ def step_set_param_list(context):
 @then(u"I should see the list env var")
 def step_get_param_list(context):
     expect_exact(context, "evens=[0, 2, 4, 6, 8]")
+
+@given(u"I start cycli in read-only mode")
+def step_start_cycli_read_only(context):
+    context.cli = pexpect.spawnu("cycli -u neo4j -p password -r")
+
+@when(u"I execute a write query")
+def step_execute_write_query(context):
+    context.cli.sendline("CREATE (n) RETURN n;")
+
+@then(u"I should be told I'm in read-only mode")
+def step_tell_read_only(context):
+    expect_exact(context, "Query aborted. You are in read-only mode.")
