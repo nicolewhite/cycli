@@ -248,6 +248,7 @@ def print_help():
         ["refresh", "Refresh schema cache."],
         ["run-n", "Run a Cypher query n times."],
         ["export", "Set a parameter with export key=value."],
+        ["save-csv", "Save the query results to a CSV file."],
         ["schema", "Display indexes, constraints, labels, and relationship types."],
         ["schema-indexes", "Display indexes."],
         ["schema-constraints", "Display constraints."],
