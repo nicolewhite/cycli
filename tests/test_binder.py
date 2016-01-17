@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from cycli.binder import curly_left, curly_right, paren_left, paren_right, bracket_left, bracket_right, apostrophe, \
     quote
 from mock import call
