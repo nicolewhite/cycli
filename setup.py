@@ -13,7 +13,7 @@ setup(name='cycli',
       packages=['cycli'],
       install_requires=[
         'click==4.1',
-        'prompt-toolkit==0.43',
+        'prompt-toolkit==0.57',
         'Pygments==2.0.2',
         'py2neo==2.0.7',
         'requests==2.7.0',

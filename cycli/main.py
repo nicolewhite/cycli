@@ -8,9 +8,11 @@ from datetime import datetime
 
 import click
 from prompt_toolkit import Application, CommandLineInterface, AbortAction
+from prompt_toolkit.buffer import AcceptAction
 from prompt_toolkit.history import FileHistory
-from prompt_toolkit.shortcuts import create_default_layout, create_eventloop
+from prompt_toolkit.shortcuts import create_prompt_layout, create_eventloop
 from prompt_toolkit.filters import Always
+from prompt_toolkit.styles import PygmentsStyle
 from pygments.token import Token
 from py2neo.error import Unauthorized
 from py2neo.packages.httpstream import SocketError, http
@@ -111,20 +113,21 @@ class Cycli:
 
         completer = CypherCompleter(labels, relationship_types, properties)
 
-        layout = create_default_layout(
+        layout = create_prompt_layout(
             lexer=CypherLexer,
             get_prompt_tokens=get_tokens,
-            reserve_space_for_menu=True
+            reserve_space_for_menu=8,
         )
 
         buff = CypherBuffer(
+            accept_action=AcceptAction.RETURN_DOCUMENT,
             history=FileHistory(filename=os.path.expanduser('~/.cycli_history')),
             completer=completer,
-            complete_while_typing=Always()
+            complete_while_typing=True,
         )
 
         application = Application(
-            style=CypherStyle,
+            style=PygmentsStyle(CypherStyle),
             buffer=buff,
             layout=layout,
             on_exit=AbortAction.RAISE_EXCEPTION,
