@@ -20,7 +20,7 @@ def parse_text_from_html(html, prefix, postfix):
     return data
 
 def get_github_gist_urls(html):
-    prefix = 'http://gist.neo4j.org/?'
+    prefix = 'http://neo4j.com/graphgist/'
     postfix = '">'
 
     ids = parse_text_from_html(html, prefix, postfix)
