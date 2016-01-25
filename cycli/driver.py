@@ -1,5 +1,5 @@
 from datetime import datetime
-from cycli.table import pretty_print_table
+from cycli.table import table_string, pretty_print_table
 
 
 class AuthError(Exception):
@@ -118,11 +118,11 @@ try:
     class BoltClient(object):
 
         def __init__(self, host, port, username=None, password=None, ssl=False, timeout=None):
-            bolt_uri = "bolt://{host}:{port}".format(host=host, port=port)
+            bolt_uri = "bolt://{host}".format(host=host, port=port)
             if username and password:
                 # todo: set auth header
                 pass
-            self.http_uri = "http://{host}:7474/db/data/".format(host=host, port=port)
+            self.http_uri = "http://{host}:{port}/db/data/".format(host=host, port=port)
             driver = GraphDatabase.driver(bolt_uri)
             self.session = driver.session()
 
@@ -132,7 +132,9 @@ try:
             tx = self.session.begin_transaction()
 
             try:
-                results = tx.run(statement, parameters)
+                cursor = tx.run(statement, parameters)
+                rows = [list(record.values()) for record in cursor.stream()]
+                results = table_string(cursor.keys, rows)
                 tx.commit()
             except KeyboardInterrupt:
                 tx.rollback()

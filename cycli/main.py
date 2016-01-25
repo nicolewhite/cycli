@@ -20,7 +20,7 @@ from cycli.style import CypherStyle
 from cycli.completer import CypherCompleter
 from cycli.buffer import CypherBuffer
 from cycli.binder import CypherBinder
-from cycli.neo4j import Neo4j, AuthError, ConnectionError
+from cycli.driver import Neo4j, AuthError, ConnectionError
 from cycli.table import pretty_print_table
 from cycli.cypher import Cypher
 
