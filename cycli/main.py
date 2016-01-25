@@ -11,11 +11,8 @@ from prompt_toolkit import Application, CommandLineInterface, AbortAction
 from prompt_toolkit.buffer import AcceptAction
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.shortcuts import create_prompt_layout, create_eventloop
-from prompt_toolkit.filters import Always
 from prompt_toolkit.styles import PygmentsStyle
 from pygments.token import Token
-from py2neo.error import Unauthorized
-from py2neo.packages.httpstream import SocketError, http
 
 from cycli import __version__
 from cycli.lexer import CypherLexer
@@ -23,7 +20,7 @@ from cycli.style import CypherStyle
 from cycli.completer import CypherCompleter
 from cycli.buffer import CypherBuffer
 from cycli.binder import CypherBinder
-from cycli.neo4j import Neo4j
+from cycli.driver import Neo4j, AuthError, ConnectionError
 from cycli.table import pretty_print_table
 from cycli.cypher import Cypher
 
@@ -36,7 +33,7 @@ def get_tokens(x):
 
 class Cycli:
 
-    def __init__(self, host, port, username, password, logfile, filename, ssl, read_only):
+    def __init__(self, host, port, username, password, logfile, filename, ssl, read_only, timeout):
         self.host = host
         self.port = port
         self.username = username
@@ -45,6 +42,9 @@ class Cycli:
         self.filename = filename
         self.ssl = ssl
         self.read_only = read_only
+        self.timeout = timeout
+        self.neo4j = Neo4j(self.host, self.port, self.username, self.password,
+                           self.ssl, self.timeout)
 
     def write_to_logfile(self, query, response):
         results = response["results"]
@@ -71,22 +71,10 @@ class Cycli:
         csvfile.close()
 
     def run(self):
-        neo4j = Neo4j(self.host, self.port, self.username, self.password, self.ssl)
-        neo4j.connect()
-        self.neo4j = neo4j
-
-        try:
-            labels = neo4j.labels()
-            relationship_types = neo4j.relationship_types()
-            properties = neo4j.properties()
-
-        except Unauthorized:
-            print("Unauthorized. See cycli --help for authorization instructions.")
-            return
-
-        except SocketError:
-            print("Connection refused. Is Neo4j turned on?")
-            return
+        neo4j = self.neo4j
+        labels = neo4j.labels()
+        relationship_types = neo4j.relationship_types()
+        properties = neo4j.properties()
 
         if self.filename:
             queries = self.filename.read()
@@ -283,11 +271,17 @@ def run(host, port, username, version, timeout, password, logfile, filename, ssl
     if username and not password:
         password = click.prompt("Password", hide_input=True, show_default=False, type=str)
 
-    if timeout:
-        http.socket_timeout = timeout
+    try:
+        cycli = Cycli(host, port, username, password, logfile, filename, ssl, read_only, timeout)
 
-    cycli = Cycli(host, port, username, password, logfile, filename, ssl, read_only)
-    cycli.run()
+    except AuthError:
+        print("Unauthorized. See cycli --help for authorization instructions.")
+
+    except ConnectionError:
+        print("Connection refused. Is Neo4j turned on?")
+
+    else:
+        cycli.run()
 
 
 if __name__ == '__main__':
