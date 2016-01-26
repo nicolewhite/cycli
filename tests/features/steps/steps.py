@@ -69,3 +69,20 @@ def step_execute_write_query(context):
 @then(u"I should be told I'm in read-only mode")
 def step_tell_read_only(context):
     expect_exact(context, "Query aborted. You are in read-only mode.")
+
+@when(u"I ask to see the labels")
+def step_get_labels(context):
+    context.cli.sendline("schema-labels")
+
+@given(u"I add a node with a label")
+def step_add_node_with_label(context):
+    context.cli.sendline("CREATE (p:Person);")
+
+@when(u"I refresh the schema")
+def step_refresh_schema(context):
+    context.cli.sendline("refresh")
+
+@then(u"I should see the new label")
+def step_see_new_label(context):
+    for expected_line in ["Labels", "------", "Person"]:
+        expect_exact(context, expected_line)
