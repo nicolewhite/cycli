@@ -34,17 +34,10 @@ def get_tokens(x):
 class Cycli:
 
     def __init__(self, host, port, username, password, logfile, filename, ssl, read_only, timeout):
-        self.host = host
-        self.port = port
-        self.username = username
-        self.password = password
         self.logfile = logfile
         self.filename = filename
-        self.ssl = ssl
         self.read_only = read_only
-        self.timeout = timeout
-        self.neo4j = Neo4j(self.host, self.port, self.username, self.password,
-                           self.ssl, self.timeout)
+        self.neo4j = Neo4j(host, port, username, password, ssl, timeout)
 
     def write_to_logfile(self, query, response):
         results = response["results"]
