@@ -1,5 +1,5 @@
 from datetime import datetime
-from cycli.table import table_string, pretty_print_table
+from cycli.table import pretty_table
 
 
 class AuthError(Exception):
@@ -67,27 +67,27 @@ class Neo4j:
         headers = ["Labels"]
         rows = [[x] for x in self.get_labels()]
 
-        pretty_print_table(headers, rows)
+        print(pretty_table(headers, rows))
 
     def print_relationship_types(self):
         headers = ["Relationship Types"]
         rows = [[x] for x in self.get_relationship_types()]
 
-        pretty_print_table(headers, rows)
+        print(pretty_table(headers, rows))
 
     def print_constraints(self):
         headers = ["Constraints"]
         constraints = self.get_constraints()
         rows = [[x] for x in self.format_constraints_indexes(constraints)]
 
-        pretty_print_table(headers, rows)
+        print(pretty_table(headers, rows))
 
     def print_indexes(self):
         headers = ["Indexes"]
         indexes = self.get_indexes()
         rows = [[x] for x in self.format_constraints_indexes(indexes)]
 
-        pretty_print_table(headers, rows)
+        print(pretty_table(headers, rows))
 
     def format_constraints_indexes(self, values):
         return [":{}({})".format(value["label"], ",".join(value["property_keys"])) for value in values]
@@ -104,12 +104,13 @@ class Neo4j:
         [x.extend([""] * (max_length - len(x))) for x in columns]
         rows = [[x[i] for x in columns] for i in range(max_length)]
 
-        pretty_print_table(headers, rows)
+        print(pretty_table(headers, rows))
 
 
 try:
     from neo4j.v1 import GraphDatabase
     from json import loads
+    from py2neo.cypher import cypher_repr
     try:
         from urllib.request import urlopen
     except ImportError:
@@ -135,8 +136,8 @@ try:
 
             try:
                 cursor = tx.run(statement, parameters)
-                rows = [list(record.values()) for record in cursor.stream()]
-                results = table_string(cursor.keys, rows)
+                rows = [map(cypher_repr, list(row.values())) for row in cursor.stream()]
+                results = pretty_table(cursor.keys, rows)
                 tx.commit()
             except KeyboardInterrupt:
                 tx.rollback()

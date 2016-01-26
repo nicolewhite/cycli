@@ -1,33 +1,4 @@
-from py2neo.cypher import cypher_repr
-
-
-def table_string(headers, rows):
-    """
-    :param headers: A list, the column names.
-    :param rows: A list of lists, the row data.
-    """
-
-    rows = [list(map(cypher_repr, row)) for row in rows]
-
-    columns = [[headers[i]] + [row[i] for row in rows] for i in range(len(headers))]
-    widths = [len(max(l, key=len)) for l in columns]
-
-    top = [x.ljust(widths[i]) for i, x in enumerate(headers)]
-    separator = ["-" * widths[i] for i in range(len(headers))]
-    rest = [[x.ljust(widths[i]) for i, x in enumerate(item)] for item in rows]
-
-    top = " | ".join(top)
-    separator = "-+-".join(separator)
-    rest = [" | ".join(r) for r in rest]
-
-    top += "\n"
-    separator += "\n"
-    rest = "\n".join(rest)
-
-    return top + separator + rest + "\n"
-
-
-def pretty_print_table(headers, rows):
+def pretty_table(headers, rows):
     """
     :param headers: A list, the column names.
     :param rows: A list of lists, the row data.
@@ -51,4 +22,4 @@ def pretty_print_table(headers, rows):
     separator += "\n"
     rest = "\n".join(rest)
 
-    print(top + separator + rest)
+    return top + separator + rest + "\n"

@@ -21,7 +21,7 @@ from cycli.completer import CypherCompleter
 from cycli.buffer import CypherBuffer
 from cycli.binder import CypherBinder
 from cycli.driver import Neo4j, AuthError, ConnectionError
-from cycli.table import pretty_print_table
+from cycli.table import pretty_table
 from cycli.cypher import Cypher
 
 cypher = Cypher()
@@ -241,7 +241,7 @@ def print_help():
         ["CTRL-C", "Abort and rollback the currently-running query."]
     ]
 
-    pretty_print_table(headers, rows)
+    print(pretty_table(headers, rows))
 
 
 @click.command()
