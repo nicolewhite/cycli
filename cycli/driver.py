@@ -175,7 +175,7 @@ except ImportError:
     class Py2neoClient(object):
 
         def __init__(self, host, port, username=None, password=None, ssl=False, timeout=None):
-            if timeout:
+            if timeout is not None:
                 http.socket_timeout = timeout
 
             host_port = "{host}:{port}".format(host=host, port=port)
