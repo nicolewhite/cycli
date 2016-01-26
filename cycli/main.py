@@ -64,10 +64,9 @@ class Cycli:
         csvfile.close()
 
     def run(self):
-        neo4j = self.neo4j
-        labels = neo4j.get_labels()
-        relationship_types = neo4j.get_relationship_types()
-        properties = neo4j.get_property_keys()
+        labels = self.neo4j.get_labels()
+        relationship_types = self.neo4j.get_relationship_types()
+        properties = self.neo4j.get_property_keys()
 
         if self.filename:
             queries = self.filename.read()
