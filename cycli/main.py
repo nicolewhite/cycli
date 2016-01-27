@@ -122,7 +122,7 @@ class Cycli:
                 query = document.text
                 self.handle_query(query)
 
-        except Exception:
+        except:
             print("Goodbye!")
 
     def handle_query(self, query):
