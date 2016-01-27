@@ -24,8 +24,6 @@ from cycli.driver import Neo4j, AuthError, ConnectionError
 from cycli.table import pretty_table
 from cycli.cypher import Cypher
 
-cypher = Cypher()
-
 
 def get_tokens(x):
         return [(Token.Prompt, "> ")]
@@ -38,6 +36,7 @@ class Cycli:
         self.filename = filename
         self.read_only = read_only
         self.neo4j = Neo4j(host, port, username, password, ssl, timeout)
+        self.cypher = Cypher()
 
     def write_to_logfile(self, query, response):
         headers = response["headers"]
@@ -130,7 +129,7 @@ class Cycli:
         run_n = re.match('run-([0-9]+) (.*)', query, re.DOTALL)
         save_csv = query.startswith("save-csv ")
 
-        if cypher.is_a_write_query(query) and self.read_only:
+        if self.cypher.is_a_write_query(query) and self.read_only:
             print("Query aborted. You are in read-only mode.")
 
         elif query in ["quit", "exit"]:
