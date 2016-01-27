@@ -204,16 +204,17 @@ class Cycli:
 
                 if error is False:
                     print(pretty_table(headers, rows))
+
                     ms = "Run {}: {} ms\n".format(index + 1, duration) if run_n else "{} ms".format(duration)
                     print(ms)
+
+                    if save_csv:
+                        self.write_to_csvfile(headers, rows)
                 else:
                     print(error)
 
                 if self.logfile:
                     self.write_to_logfile(query, response)
-
-                if save_csv and error is False:
-                    self.write_to_csvfile(headers, rows)
 
                 total_duration += duration
                 index += 1
