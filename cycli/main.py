@@ -40,25 +40,26 @@ class Cycli:
         self.neo4j = Neo4j(host, port, username, password, ssl, timeout)
 
     def write_to_logfile(self, query, response):
-        results = response["results"]
+        headers = response["headers"]
+        rows = response["rows"]
         duration = response["duration"]
         error = response["error"]
 
         self.logfile.write("> {}\n".format(query))
-        self.logfile.write("{}\n".format(results))
+        self.logfile.write("{}\n".format(pretty_table(headers, rows)))
 
-        if not error:
+        if error is False:
             self.logfile.write("{} ms\n\n".format(duration))
 
     @staticmethod
-    def write_to_csvfile(data):
+    def write_to_csvfile(headers, rows):
         filename = "cycli {}.csv".format(datetime.now().strftime("%Y-%m-%d at %I.%M.%S %p"))
 
         with open(filename, "wt") as csvfile:
-            csvwriter = csv.writer(csvfile)
-            csvwriter.writerow(data.columns)
+            csvwriter = csv.writer(csvfile, quotechar=str('"'), quoting=csv.QUOTE_NONNUMERIC, delimiter=str(","))
+            csvwriter.writerow(headers)
 
-            for row in data:
+            for row in rows:
                 csvwriter.writerow(row)
 
         csvfile.close()
@@ -193,31 +194,32 @@ class Cycli:
 
             total_duration = 0
             index = 0
-            error = False
 
             while index < count:
                 response = self.neo4j.cypher(query)
 
-                results = response["results"]
+                headers = response["headers"]
+                rows = response["rows"]
                 duration = response["duration"]
                 error = response["error"]
 
-                print(results)
-
-                if not error:
+                if error is False:
+                    print(pretty_table(headers, rows))
                     ms = "Run {}: {} ms\n".format(index + 1, duration) if run_n else "{} ms".format(duration)
                     print(ms)
+                else:
+                    print(error)
 
                 if self.logfile:
                     self.write_to_logfile(query, response)
 
-                if save_csv and not error:
-                    self.write_to_csvfile(results[0])
+                if save_csv and error is False:
+                    self.write_to_csvfile(headers, rows)
 
                 total_duration += duration
                 index += 1
 
-            if run_n and not error:
+            if run_n and error is False:
                 print("Total duration: {} ms".format(total_duration))
 
 

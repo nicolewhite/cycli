@@ -4,6 +4,8 @@ def pretty_table(headers, rows):
     :param rows: A list of lists, the row data.
     """
 
+    rows = [[stringify(s) for s in row] for row in rows]
+
     if not all([len(headers) == len(row) for row in rows]):
         return "Incorrect number of rows."
 
@@ -23,3 +25,17 @@ def pretty_table(headers, rows):
     rest = "\n".join(rest)
 
     return top + separator + rest + "\n"
+
+def stringify(s):
+    if s is None:
+        return ""
+
+    try:
+        unicode
+    except NameError:
+        return str(s)
+    else:
+        if isinstance(s, unicode):
+            return s.encode("utf8")
+
+    return str(s)

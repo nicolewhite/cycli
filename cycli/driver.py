@@ -110,7 +110,6 @@ class Neo4j:
 try:
     from neo4j.v1 import GraphDatabase
     from json import loads
-    from py2neo.cypher import cypher_repr
     try:
         from urllib.request import urlopen
     except ImportError:
@@ -131,26 +130,32 @@ try:
 
         def cypher(self, statement, parameters):
             error = False
+            headers = []
+            rows = []
+
             start = datetime.now()
             tx = self.session.begin_transaction()
 
             try:
                 cursor = tx.run(statement, parameters)
-                rows = [map(cypher_repr, list(row.values())) for row in cursor.stream()]
-                results = pretty_table(cursor.keys, rows)
+                rows = [list(row.values()) for row in cursor.stream()]
+                headers = cursor.keys
                 tx.commit()
             except KeyboardInterrupt:
                 tx.rollback()
-                results = ""
-                error = True
+                error = ""
             except Exception as e:
-                results = e
-                error = True
+                error = e
 
             end = datetime.now()
             duration = int(round((end - start).total_seconds() * 1000))
 
-            return {"results": results, "duration": duration, "error": error}
+            return {
+                "headers": headers,
+                "rows": rows,
+                "duration": duration,
+                "error": error
+            }
 
         def get_labels(self):
             return sorted(loads(urlopen(self.http_uri + "labels").read()))
@@ -196,25 +201,34 @@ except ImportError:
 
         def cypher(self, statement, parameters):
             error = False
+            headers = []
+            rows = []
+
             start = datetime.now()
             tx = self.graph.cypher.begin()
 
             try:
                 tx.append(statement, parameters)
                 results = tx.process()
+                results = results[0]
+                headers = results.columns
+                rows = [[x[header] for header in headers] for x in results]
                 tx.commit()
             except KeyboardInterrupt:
                 tx.rollback()
-                results = ""
-                error = True
+                error = ""
             except Exception as e:
-                results = e
-                error = True
+                error = e
 
             end = datetime.now()
             duration = int(round((end - start).total_seconds() * 1000))
 
-            return {"results": results, "duration": duration, "error": error}
+            return {
+                "headers": headers,
+                "rows": rows,
+                "duration": duration,
+                "error": error
+            }
 
         def get_labels(self):
             return sorted(self.graph.resource.resolve("labels").get().content)
