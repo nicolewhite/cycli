@@ -7,9 +7,9 @@ from prompt_toolkit.document import Document
 def completer():
     from cycli.completer import CypherCompleter
     return CypherCompleter(
-        labels=["Movie", "Person"],
-        relationship_types=["ACTED_IN", "DIRECTED"],
-        properties=["name", "title"]
+        labels=["Movie", "Person", "Under_Score", "Spa Ce"],
+        relationship_types=["ACTED_IN", "DIRECTED", "SPA CE"],
+        properties=["name", "title", "under_score", "spa ce"]
     )
 
 @pytest.fixture
@@ -37,16 +37,6 @@ def test_label_completion(completer, complete_event):
 
     assert result == [Completion(text="Person", start_position=-1)]
 
-def test_rel_completion(completer, complete_event):
-    text = "MATCH (p:Person)-[:A"
-    position = len(text)
-
-    result = list(completer.get_completions(
-        Document(text=text, cursor_position=position),
-        complete_event))
-
-    assert result == [Completion(text="ACTED_IN", start_position=-1)]
-
 def test_label_completion_after_rel(completer, complete_event):
     text = "MATCH (p:Person)-[:ACTED_IN]->(m:M"
     position = len(text)
@@ -57,6 +47,96 @@ def test_label_completion_after_rel(completer, complete_event):
 
     assert result == [Completion(text="Movie", start_position=-1)]
 
+def test_label_completion_with_backticks(completer, complete_event):
+    text = "MATCH (p:`P"
+    position = len(text)
+
+    result = list(completer.get_completions(
+        Document(text=text, cursor_position=position),
+        complete_event))
+
+    assert result == [Completion(text="Person", start_position=-1)]
+
+def test_label_completion_with_underscores(completer, complete_event):
+    text = "MATCH (u:Under_S"
+    position = len(text)
+
+    result = list(completer.get_completions(
+        Document(text=text, cursor_position=position),
+        complete_event))
+
+    assert result == [Completion(text="Under_Score", start_position=-7)]
+
+def test_label_completion_with_backticks_and_spaces(completer, complete_event):
+    text = "MATCH (s:`Spa C"
+    position = len(text)
+
+    result = list(completer.get_completions(
+        Document(text=text, cursor_position=position),
+        complete_event))
+
+    assert result == [Completion(text="Spa Ce", start_position=-5)]
+
+def test_label_completion_with_backticks_and_underscores(completer, complete_event):
+    text = "MATCH (u:`Under_S"
+    position = len(text)
+
+    result = list(completer.get_completions(
+        Document(text=text, cursor_position=position),
+        complete_event))
+
+    assert result == [Completion(text="Under_Score", start_position=-7)]
+
+def test_rel_completion(completer, complete_event):
+    text = "MATCH (p:Person)-[:A"
+    position = len(text)
+
+    result = list(completer.get_completions(
+        Document(text=text, cursor_position=position),
+        complete_event))
+
+    assert result == [Completion(text="ACTED_IN", start_position=-1)]
+
+def test_rel_completion_with_backticks(completer, complete_event):
+    text = "MATCH (p:Person)-[:`A"
+    position = len(text)
+
+    result = list(completer.get_completions(
+        Document(text=text, cursor_position=position),
+        complete_event))
+
+    assert result == [Completion(text="ACTED_IN", start_position=-1)]
+
+def test_rel_completion_with_underscores(completer, complete_event):
+    text = "MATCH (p:Person)-[:ACTED_I"
+    position = len(text)
+
+    result = list(completer.get_completions(
+        Document(text=text, cursor_position=position),
+        complete_event))
+
+    assert result == [Completion(text="ACTED_IN", start_position=-7)]
+
+def test_rel_completion_with_backsticks_and_spaces(completer, complete_event):
+    text = "MATCH (p:Person)-[`:SPA C"
+    position = len(text)
+
+    result = list(completer.get_completions(
+        Document(text=text, cursor_position=position),
+        complete_event))
+
+    assert result == [Completion(text="SPA CE", start_position=-5)]
+
+def test_rel_completion_with_backticks_and_underscores(completer, complete_event):
+    text = "MATCH (p:Person)-[:`ACTED_I"
+    position = len(text)
+
+    result = list(completer.get_completions(
+        Document(text=text, cursor_position=position),
+        complete_event))
+
+    assert result == [Completion(text="ACTED_IN", start_position=-7)]
+
 def test_property_completion(completer, complete_event):
     text = "MATCH (p:Person) WHERE p.n"
     position = len(text)
@@ -66,6 +146,46 @@ def test_property_completion(completer, complete_event):
         complete_event))
 
     assert result == [Completion(text="name", start_position=-1)]
+
+def test_property_completion_with_backticks(completer, complete_event):
+    text = "MATCH (p:Person) WHERE p.`n"
+    position = len(text)
+
+    result = list(completer.get_completions(
+        Document(text=text, cursor_position=position),
+        complete_event))
+
+    assert result == [Completion(text="name", start_position=-1)]
+
+def test_property_completion_with_underscores(completer, complete_event):
+    text = "MATCH (p:Person) WHERE p.under_s"
+    position = len(text)
+
+    result = list(completer.get_completions(
+        Document(text=text, cursor_position=position),
+        complete_event))
+
+    assert result == [Completion(text="under_score", start_position=-7)]
+
+def test_property_completion_with_backticks_and_underscores(completer, complete_event):
+    text = "MATCH (p:Person) WHERE p.`under_s"
+    position = len(text)
+
+    result = list(completer.get_completions(
+        Document(text=text, cursor_position=position),
+        complete_event))
+
+    assert result == [Completion(text="under_score", start_position=-7)]
+
+def test_property_completion_with_backticks_and_spaces(completer, complete_event):
+    text = "MATCH (p:Person) WHERE p.`spa c"
+    position = len(text)
+
+    result = list(completer.get_completions(
+        Document(text=text, cursor_position=position),
+        complete_event))
+
+    assert result == [Completion(text="spa ce", start_position=-5)]
 
 def test_no_property_completion_in_float(completer, complete_event):
     text = "RETURN 5."

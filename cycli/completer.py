@@ -3,9 +3,6 @@ from prompt_toolkit.completion import Completer, Completion
 from cycli.cypher import Cypher
 
 
-cypher = Cypher()
-
-
 class CypherCompleter(Completer):
 
     def __init__(self, labels, relationship_types, properties):
@@ -15,35 +12,35 @@ class CypherCompleter(Completer):
         self.relationship_types = relationship_types
         self.properties = properties
 
+        self.cypher = Cypher()
+
     def get_completions(self, document, complete_event):
-        chars_before_cursor = document.get_word_before_cursor(WORD=True)
-        all_text = document.text_before_cursor
-        lookup = self.find_last_alphabetic_chunk(chars_before_cursor)
+        text_before_cursor = document.text_before_cursor
         choices = []
+        lookup = ""
 
-        if not chars_before_cursor or self.unclosed_strings(all_text):
+        if self.exists_unclosed_char("'", text_before_cursor) or self.exists_unclosed_char('"', text_before_cursor):
             return
+        elif self.typing_label(text_before_cursor):
+            choices = self.labels
+            lookup = self.everything_after_last(":", text_before_cursor)
+        elif self.typing_relationship(text_before_cursor):
+            choices = self.relationship_types
+            lookup = self.everything_after_last(":", text_before_cursor)
+        elif self.typing_property(text_before_cursor):
+            loc = text_before_cursor.rfind(".")
+            identifier = text_before_cursor[text_before_cursor.rfind(" ", 0, loc) + 1:loc]
 
-        if self.most_recent_non_alpha(chars_before_cursor) == ":":
-            if self.looking_for(chars_before_cursor) == "label":
-                choices = self.labels
-            elif self.looking_for(chars_before_cursor) == "relationship":
-                choices = self.relationship_types
+            if identifier.isalnum() and any(c.isalpha() for c in identifier):
+                choices = self.properties
+                lookup = self.everything_after_last(".", text_before_cursor)
             else:
                 return
-        elif self.most_recent_non_alpha(chars_before_cursor) == ".":
-            loc = chars_before_cursor.find(".")
-
-            if loc:
-                identifier = chars_before_cursor[:loc]
-
-                if identifier.isalnum() and any(c.isalpha() for c in identifier):
-                    choices = self.properties
-                else:
-                    return
-        elif chars_before_cursor[-1].isalpha():
-            last_cypher_word = self.most_recent_cypher_word(all_text)
-            choices = cypher.most_probable_next_keyword(last_cypher_word)
+        elif text_before_cursor:
+            if text_before_cursor[-1].isalpha():
+                last_cypher_word = self.most_recent_cypher_word(text_before_cursor)
+                choices = self.cypher.most_probable_next_keyword(last_cypher_word)
+                lookup = self.last_alphabetic_chunk(text_before_cursor)
         else:
             return
 
@@ -52,7 +49,8 @@ class CypherCompleter(Completer):
         for completion in completions:
             yield Completion(completion, -len(lookup))
 
-    def find_matches(self, word, choices):
+    @staticmethod
+    def find_matches(word, choices):
         word = word.lower()
         lower_choices = [x.lower() for x in choices]
 
@@ -64,15 +62,22 @@ class CypherCompleter(Completer):
 
         return completions
 
-    def looking_for(self, chars_before_cursor):
-        paren = chars_before_cursor.rfind("(")
-        bracket = chars_before_cursor.rfind("[")
-        curly = chars_before_cursor.rfind("{")
+    def most_recent_cypher_word(self, chars):
+        text = " " + chars
+        keyword_indices = [(word, text.rfind(" " + word + " ")) for word in self.cypher.KEYWORDS]
+        function_indices = [(word, text.rfind(" " + word + "(")) for word in self.cypher.FUNCTIONS]
 
-        d = dict(label=paren, relationship=bracket, curly=curly)
-        return max(d, key=d.get)
+        indices = keyword_indices + function_indices
 
-    def find_last_alphabetic_chunk(self, chars):
+        # If no keywords were found, we want to be in the "" state in the Markov model.
+        if not any([i[1] > -1 for i in indices]):
+            return ""
+
+        most_recent = max(indices, key=lambda i:i[1])[0]
+        return most_recent
+
+    @staticmethod
+    def last_alphabetic_chunk(chars):
         chars = list(chars)
         chars.reverse()
 
@@ -87,29 +92,42 @@ class CypherCompleter(Completer):
         keep.reverse()
         return "".join(keep)
 
-    def most_recent_cypher_word(self, all_text):
-        text = " " + all_text
-        keyword_indices = [(word, text.rfind(" " + word + " ")) for word in cypher.KEYWORDS]
-        function_indices = [(word, text.rfind(" " + word + "(")) for word in cypher.FUNCTIONS]
+    @staticmethod
+    def everything_after_last(char, chars):
+        chars = chars.replace("`", "")
+        loc = chars.rfind(char)
+        return chars[loc + 1:]
 
-        indices = keyword_indices + function_indices
+    @staticmethod
+    def exists_unclosed_char(char, chars):
+        return chars.count(char) % 2 != 0
 
-        # If no keywords were found, we want to be in the "" state in the Markov model.
-        if not any([i[1] > -1 for i in indices]):
-            return ""
+    @staticmethod
+    def exists_unclosed_pattern(open_char, close_char, chars):
+        return chars.count(open_char) != chars.count(close_char)
 
-        most_recent = max(indices, key=lambda i:i[1])[0]
-        return most_recent
+    def colon_inside_unclosed_pattern(self, open_char, close_char, chars):
+        return self.exists_unclosed_pattern(open_char, close_char, chars) and chars.rfind(":") > chars.rfind(open_char)
 
-    def most_recent_non_alpha(self, chars):
+    def typing_relationship(self, chars):
+        return self.colon_inside_unclosed_pattern("[", "]", chars)
+
+    def typing_label(self, chars):
+        return self.colon_inside_unclosed_pattern("(", ")", chars)
+
+    def typing_property(self, chars):
         chars = list(chars)
         chars.reverse()
 
+        skip = ["_", "`"]
+
+        # Skip spaces if we're inside backticks.
+        if self.exists_unclosed_char("`", chars):
+            skip.append(" ")
+
         for c in chars:
-            if not c.isalpha():
-                return c
+            if not c.isalnum() and c not in skip:
+                return c == "."
 
-        return ""
+        return False
 
-    def unclosed_strings(self, chars):
-        return chars.count("\"") % 2 != 0 or chars.count("'") % 2 != 0
