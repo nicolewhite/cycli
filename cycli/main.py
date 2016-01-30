@@ -88,7 +88,10 @@ class Cycli:
         click.secho(" \ \_____\  \/\_____\  \ \_____\  \ \_____\  \ \_\ ", fg="blue")
         click.secho("  \/_____/   \/_____/   \/_____/   \/_____/   \/_/ ", fg="magenta")
 
-        print("\nVersion: {}".format(__version__))
+        msg = "\nUsing Bolt." if type(self.neo4j.client).__name__ == "BoltClient" else ""
+
+        print(msg)
+        print("Version: {}".format(__version__))
         print("Bug reports: https://github.com/nicolewhite/cycli/issues\n")
 
         completer = CypherCompleter(labels, relationship_types, properties)

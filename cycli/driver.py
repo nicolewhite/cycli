@@ -139,7 +139,7 @@ try:
             try:
                 cursor = tx.run(statement, parameters)
                 rows = [list(row.values()) for row in cursor.stream()]
-                headers = cursor.keys
+                headers = cursor.keys()
                 tx.commit()
             except KeyboardInterrupt:
                 tx.rollback()
