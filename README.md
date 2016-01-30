@@ -209,9 +209,14 @@ $ virtualenv cycli-bolt
 $ source cycli-bolt/bin/activate
 $ pip install cycli
 $ git clone https://github.com/neo4j/neo4j-python-driver.git
-$ python neo4j-python-driver/setup.py install
+$ cd neo4j-python-driver
+$ python setup.py install
 $ cycli
 ```
+
+A message on startup will indicate if you've successfully started `cycli` with the Bolt protocol:
+
+![pic](screenshots/bolt.png)
 
 ## Credits
 
