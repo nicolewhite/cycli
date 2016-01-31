@@ -4,17 +4,27 @@ def pretty_table(headers, rows):
     :param rows: A list of lists, the row data.
     """
 
-    rows = [[stringify(s) for s in row] for row in rows]
-
     if not all([len(headers) == len(row) for row in rows]):
         return "Incorrect number of rows."
 
-    columns = [[headers[i]] + [row[i] for row in rows] for i in range(len(headers))]
-    widths = [len(max(l, key=len)) for l in columns]
+    rows = [[stringify(s) for s in row] for row in rows]
+
+    widths = col_widths(headers, rows)
 
     top = [x.ljust(widths[i]) for i, x in enumerate(headers)]
     separator = ["-" * widths[i] for i in range(len(headers))]
-    rest = [[x.ljust(widths[i]) for i, x in enumerate(item)] for item in rows]
+
+    rest = []
+
+    for item in rows:
+        row = []
+        for i, x in enumerate(item):
+            if isnumeric(x):
+                row.append(x.rjust(widths[i]))
+            else:
+                row.append(x.ljust(widths[i]))
+
+        rest.append(row)
 
     top = " | ".join(top)
     separator = "-+-".join(separator)
@@ -25,6 +35,18 @@ def pretty_table(headers, rows):
     rest = "\n".join(rest)
 
     return top + separator + rest + "\n"
+
+def col_widths(headers, rows):
+    l = [headers] + rows
+    transpose = [list(x) for x in zip(*l)]
+    return [len(max(x, key=len)) for x in transpose]
+
+def isnumeric(s):
+    for c in s:
+        if not c.isdigit() and c != ".":
+            return False
+
+    return s.count(".") < 2
 
 def stringify(s):
     if s is None:
