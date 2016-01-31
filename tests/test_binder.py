@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 from cycli.binder import curly_left, curly_right, paren_left, paren_right, bracket_left, bracket_right, apostrophe, \
-    quote
+    quote, backtick
 from mock import call
 
 import pytest
@@ -85,3 +85,15 @@ def test_quote_not_current(binder):
     binder.cli.current_buffer.document.current_char = "n"
     quote(binder)
     binder.cli.current_buffer.insert_text.assert_has_calls([call("\""), call("\"", move_cursor=False)])
+
+
+def test_backtick_current(binder):
+    binder.cli.current_buffer.document.current_char = "`"
+    backtick(binder)
+    binder.cli.current_buffer.cursor_right.assert_called_once_with()
+
+
+def test_backtick_not_current(binder):
+    binder.cli.current_buffer.document.current_char = "n"
+    backtick(binder)
+    binder.cli.current_buffer.insert_text.assert_has_calls([call("`"), call("`", move_cursor=False)])
