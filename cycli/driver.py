@@ -10,6 +10,10 @@ class ConnectionError(Exception):
     pass
 
 
+def duration_in_ms(start, end):
+    return int(round((end - start).total_seconds() * 1000))
+
+
 class Neo4j:
 
     Client = None
@@ -148,12 +152,11 @@ try:
                 error = e
 
             end = datetime.now()
-            duration = int(round((end - start).total_seconds() * 1000))
 
             return {
                 "headers": headers,
                 "rows": rows,
-                "duration": duration,
+                "duration": duration_in_ms(start, end),
                 "error": error
             }
 
@@ -221,12 +224,11 @@ except ImportError:
                 error = e
 
             end = datetime.now()
-            duration = int(round((end - start).total_seconds() * 1000))
 
             return {
                 "headers": headers,
                 "rows": rows,
-                "duration": duration,
+                "duration": duration_in_ms(start, end),
                 "error": error
             }
 
