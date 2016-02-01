@@ -52,6 +52,9 @@ def stringify(s):
     if s is None:
         return ""
 
+    if isinstance(s, list):
+        return repr([stringify(x) for x in s])
+
     try:
         unicode
     except NameError:
