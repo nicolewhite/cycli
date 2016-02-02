@@ -14,6 +14,17 @@ def duration_in_ms(start, end):
     return int(round((end - start).total_seconds() * 1000))
 
 
+def walk(profile):
+    steps = []
+    steps.append(profile)
+
+    for child in profile.children:
+        for n in walk(child):
+            steps.append(n)
+
+    return steps
+
+
 class Neo4j:
 
     Client = None
@@ -110,6 +121,30 @@ class Neo4j:
 
         print(pretty_table(headers, rows))
 
+    def print_profile(self, profile):
+        planner = profile.arguments["planner"]
+        version = profile.arguments["version"]
+        runtime = profile.arguments["runtime"]
+
+        print("")
+        print("Planner: {}".format(planner))
+        print("Version: {}".format(version))
+        print("Runtime: {}".format(runtime))
+        print("")
+
+        headers = ["Operator", "Estimated Rows", "Rows", "DB Hits", "Variables"]
+        rows = []
+
+        for n in reversed(walk(profile)):
+            operator = n.operator_type
+            estimated_rows = int(n.arguments["EstimatedRows"])
+            rows_ = n.arguments["Rows"]
+            db_hits = n.arguments["DbHits"]
+            variables = n.identifiers
+
+            rows.append([operator, estimated_rows, rows_, db_hits, variables])
+
+        print(pretty_table(headers, rows))
 
 try:
     from neo4j.v1 import GraphDatabase
@@ -134,6 +169,7 @@ try:
 
         def cypher(self, statement, parameters):
             error = False
+            profile = None
             headers = []
             rows = []
 
@@ -145,6 +181,7 @@ try:
                 rows = [list(row.values()) for row in cursor.stream()]
                 headers = cursor.keys()
                 tx.commit()
+                profile = cursor.summarize().profile
             except KeyboardInterrupt:
                 tx.rollback()
                 error = ""
@@ -157,7 +194,8 @@ try:
                 "headers": headers,
                 "rows": rows,
                 "duration": duration_in_ms(start, end),
-                "error": error
+                "error": error,
+                "profile": profile
             }
 
         def get_labels(self):

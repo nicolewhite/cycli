@@ -204,12 +204,16 @@ class Cycli:
                 rows = response["rows"]
                 duration = response["duration"]
                 error = response["error"]
+                profile = response.get("profile")
 
                 if error is False:
                     print(pretty_table(headers, rows))
 
                     ms = "Run {}: {} ms\n".format(index + 1, duration) if run_n else "{} ms".format(duration)
                     print(ms)
+
+                    if profile:
+                        self.neo4j.print_profile(profile)
 
                     if save_csv:
                         self.write_to_csvfile(headers, rows)
