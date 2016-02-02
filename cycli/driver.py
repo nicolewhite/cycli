@@ -199,19 +199,19 @@ try:
             }
 
         def get_labels(self):
-            return sorted(loads(urlopen(self.http_uri + "labels").read()))
+            return sorted(loads(urlopen(self.http_uri + "labels").read().decode("utf8")))
 
         def get_relationship_types(self):
-            return sorted(loads(urlopen(self.http_uri + "relationship/types").read()))
+            return sorted(loads(urlopen(self.http_uri + "relationship/types").read().decode("utf8")))
 
         def get_constraints(self):
-            return sorted(loads(urlopen(self.http_uri + "schema/constraint").read()))
+            return sorted(loads(urlopen(self.http_uri + "schema/constraint").read().decode("utf8")))
 
         def get_indexes(self):
-            return sorted(loads(urlopen(self.http_uri + "schema/index").read()))
+            return sorted(loads(urlopen(self.http_uri + "schema/index").read().decode("utf8")))
 
         def get_property_keys(self):
-            return sorted(loads(urlopen(self.http_uri + "propertykeys").read()))
+            return sorted(loads(urlopen(self.http_uri + "propertykeys").read().decode("utf8")))
 
     Neo4j.Client = BoltClient
 
