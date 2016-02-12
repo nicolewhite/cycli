@@ -15,8 +15,7 @@ from prompt_toolkit.styles import PygmentsStyle
 from pygments.token import Token
 
 from cycli import __version__
-from cycli.lexer import CypherLexer
-from cycli.style import CypherStyle
+from cycli.style import CypherLexer, CypherStyle
 from cycli.completer import CypherCompleter
 from cycli.buffer import CypherBuffer
 from cycli.binder import CypherBinder
