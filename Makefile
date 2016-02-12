@@ -23,3 +23,9 @@ markov:
 download_neo4j:
 	neokit/neoget -i -x 2.3.1 2.2.6 2.1.8
 	neokit/neoctl unzip 2.3.1 2.2.6 2.1.8
+
+register:
+	python setup.py register -r pypi
+
+upload:
+	python setup.py sdist upload -r pypi
