@@ -214,9 +214,7 @@ $ python setup.py install
 $ cycli
 ```
 
-A message on startup will indicate if you've successfully started `cycli` with the Bolt protocol:
-
-![pic](screenshots/bolt.png)
+You will see `Using Bolt.` on startup if you've successfully started `cycli` with the Bolt protocol.
 
 [1]: You can disable authentication by setting `dbms.security.auth_enabled=false` in `conf/neo4j-server.properties`.
 
