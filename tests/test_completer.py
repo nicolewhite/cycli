@@ -84,6 +84,11 @@ def test_rel_completion_with_backticks_and_underscores(completer, complete_event
     result = get_completions(completer, complete_event, text)
     assert result == [Completion(text="ACTED_IN", start_position=-7)]
 
+def test_rel_completion_inside_function(completer, complete_event):
+    text = "MATCH (p:Person) RETURN p.name, SIZE((p)-[:a"
+    result = get_completions(completer, complete_event, text)
+    assert result == [Completion(text="ACTED_IN", start_position=-1)]
+
 def test_property_completion(completer, complete_event):
     text = "MATCH (p:Person) WHERE p.n"
     result = get_completions(completer, complete_event, text)

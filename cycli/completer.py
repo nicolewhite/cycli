@@ -110,10 +110,10 @@ class CypherCompleter(Completer):
         return self.exists_unclosed_pattern(open_char, close_char, chars) and chars.rfind(":") > chars.rfind(open_char)
 
     def typing_relationship(self, chars):
-        return self.colon_inside_unclosed_pattern("[", "]", chars)
+        return self.colon_inside_unclosed_pattern("[", "]", chars) and chars.rfind("[") > chars.rfind("(")
 
     def typing_label(self, chars):
-        return self.colon_inside_unclosed_pattern("(", ")", chars)
+        return self.colon_inside_unclosed_pattern("(", ")", chars) and chars.rfind("(") > chars.rfind("[")
 
     def typing_property(self, chars):
         chars = list(chars)
