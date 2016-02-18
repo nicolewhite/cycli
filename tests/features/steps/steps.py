@@ -1,7 +1,10 @@
 from __future__ import unicode_literals
 
+import time
+
 import pexpect
 from behave import given, when, then
+
 
 def expect_exact(context, expected):
     context.cli.expect_exact(expected, timeout=2)
@@ -12,6 +15,7 @@ def step_start_cycli(context):
 
 @given(u"The prompt is visible")
 def step_prompt_visible(context):
+    time.sleep(1)
     expect_exact(context, "> ")
 
 @when(u"I ask for my env vars")
