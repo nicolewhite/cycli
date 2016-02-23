@@ -181,7 +181,7 @@ try:
                 rows = [list(row.values()) for row in cursor.stream()]
                 headers = cursor.keys()
                 tx.commit()
-                profile = cursor.summarize().profile
+                profile = cursor.summary.profile
             except KeyboardInterrupt:
                 tx.rollback()
                 error = ""
