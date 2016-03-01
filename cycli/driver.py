@@ -1,11 +1,4 @@
-try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib import urlopen
-
-from json import loads
 from datetime import datetime
-
 from cycli.table import pretty_table
 
 
@@ -45,41 +38,32 @@ class Neo4j:
 
     def __init__(self, host, port, username=None, password=None, ssl=False, timeout=None):
         self.client = self.Client(host, port, username, password, ssl, timeout)
-        self.root = "http://{host}:{port}/".format(host=host, port=port)
 
     def cypher(self, query):
         return self.client.cypher(query, self.parameters)
 
-    def request_endpoint(self, endpoint):
-        data = loads(urlopen(self.root + endpoint).read().decode("utf8"))
-
-        if type(data) is list:
-            return sorted(data)
-
-        return data
-
     def get_labels(self):
         if not self.labels:
-            self.labels = self.request_endpoint("db/data/labels")
+            self.labels = self.client.get_labels()
         return self.labels
 
     def get_relationship_types(self):
         if not self.relationship_types:
-            self.relationship_types = self.request_endpoint("db/data/relationship/types")
+            self.relationship_types = self.client.get_relationship_types()
         return self.relationship_types
 
     def get_constraints(self):
         if not self.constraints:
-            self.constraints = self.request_endpoint("db/data/schema/constraints")
+            self.constraints = self.client.get_constraints()
         return self.constraints
 
     def get_indexes(self):
         if not self.indexes:
-            self.indexes = self.request_endpoint("db/data/schema/indexes")
+            self.indexes = self.client.get_indexes()
         return self.indexes
 
     def get_property_keys(self):
-        return self.request_endpoint("db/data/propertykeys")
+        return self.client.get_property_keys()
 
     def update_parameters(self, key, value):
         self.parameters[key] = value
@@ -164,6 +148,11 @@ class Neo4j:
 
 try:
     from neo4j.v1 import GraphDatabase
+    from json import loads
+    try:
+        from urllib.request import urlopen
+    except ImportError:
+        from urllib import urlopen
 
     class BoltClient(object):
 
@@ -174,6 +163,7 @@ try:
                 # todo: set auth header
                 pass
 
+            self.http_uri = "http://{host}:{port}/db/data/".format(host=host, port=port)
             driver = GraphDatabase.driver(bolt_uri)
             self.session = driver.session()
 
@@ -207,6 +197,21 @@ try:
                 "error": error,
                 "profile": profile
             }
+
+        def get_labels(self):
+            return sorted(loads(urlopen(self.http_uri + "labels").read().decode("utf8")))
+
+        def get_relationship_types(self):
+            return sorted(loads(urlopen(self.http_uri + "relationship/types").read().decode("utf8")))
+
+        def get_constraints(self):
+            return sorted(loads(urlopen(self.http_uri + "schema/constraint").read().decode("utf8")))
+
+        def get_indexes(self):
+            return sorted(loads(urlopen(self.http_uri + "schema/index").read().decode("utf8")))
+
+        def get_property_keys(self):
+            return sorted(loads(urlopen(self.http_uri + "propertykeys").read().decode("utf8")))
 
     Neo4j.Client = BoltClient
 
@@ -264,5 +269,20 @@ except ImportError:
                 "duration": duration_in_ms(start, end),
                 "error": error
             }
+
+        def get_labels(self):
+            return sorted(self.graph.resource.resolve("labels").get().content)
+
+        def get_relationship_types(self):
+            return sorted(self.graph.resource.resolve("relationship/types").get().content)
+
+        def get_constraints(self):
+            return sorted(self.graph.resource.resolve("schema/constraint").get().content)
+
+        def get_indexes(self):
+            return sorted(self.graph.resource.resolve("schema/index").get().content)
+
+        def get_property_keys(self):
+            return sorted(self.graph.resource.resolve("propertykeys").get().content)
 
     Neo4j.Client = Py2neoClient
