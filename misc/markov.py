@@ -17,12 +17,10 @@ for query in queries:
     # Find the indices of Cypher functions and keywords separately. This results in a list of tuples for each word and its
     # index, e.g. [('MATCH', 0), ('WHERE', 13), ('RETURN', 29)].
 
-    # Find the functions. This will miss cases where people put a space between the function and the open
-    # parenthesis, e.g. LENGTH ([1,2,3]), but oh well.
     function_indices = []
 
     for word in cypher.FUNCTIONS:
-        idx = [m.start() for m in re.finditer(" " + word + "\(", query)]
+        idx = [m.start() for m in re.finditer(" " + word + "\s+\(", query)]
 
         for i in idx:
             function_indices.append((word, i))
@@ -63,7 +61,7 @@ for key, value in markov.items():
     if denominator == 0:
         # Absorbing state.
         markov[key] = {i: 1.0 if i == key else 0.0 for i in value.keys()}
-    elif denominator > 0:
+    else:
         markov[key] = {i:j / denominator for i, j in value.items()}
 
 # Convert dictionaries to list of tuples so that they can be stored in order.
