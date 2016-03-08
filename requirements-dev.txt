@@ -2,3 +2,4 @@ behave==1.2.5
 mock>=1.0.1
 pexpect==4.0.1
 pytest>=2.7.0
+requests==2.9.1
