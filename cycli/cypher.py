@@ -57,6 +57,7 @@ class Cypher:
             "RELATIONSHIP",
             "RELATIONSHIPS",
             "REPLACE",
+            "REVERSE",
             "RIGHT",
             "ROUND",
             "RTRIM",
