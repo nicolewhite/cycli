@@ -277,10 +277,10 @@ except ImportError:
             return sorted(self.graph.resource.resolve("relationship/types").get().content)
 
         def get_constraints(self):
-            return sorted(self.graph.resource.resolve("schema/constraint").get().content)
+            return self.graph.resource.resolve("schema/constraint").get().content
 
         def get_indexes(self):
-            return sorted(self.graph.resource.resolve("schema/index").get().content)
+            return self.graph.resource.resolve("schema/index").get().content
 
         def get_property_keys(self):
             return sorted(self.graph.resource.resolve("propertykeys").get().content)
