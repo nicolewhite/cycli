@@ -25,6 +25,10 @@ def walk(profile):
     return steps
 
 
+def sort_dict_by_key(d, key):
+    return sorted(d, key=lambda k: k[key])
+
+
 class Neo4j:
 
     Client = None
@@ -205,10 +209,12 @@ try:
             return sorted(loads(urlopen(self.http_uri + "relationship/types").read().decode("utf8")))
 
         def get_constraints(self):
-            return sorted(loads(urlopen(self.http_uri + "schema/constraint").read().decode("utf8")))
+            data = loads(urlopen(self.http_uri + "schema/constraint").read().decode("utf8"))
+            return sort_dict_by_key(data, "label")
 
         def get_indexes(self):
-            return sorted(loads(urlopen(self.http_uri + "schema/index").read().decode("utf8")))
+            data = loads(urlopen(self.http_uri + "schema/index").read().decode("utf8"))
+            return sort_dict_by_key(data, "label")
 
         def get_property_keys(self):
             return sorted(loads(urlopen(self.http_uri + "propertykeys").read().decode("utf8")))
@@ -277,10 +283,12 @@ except ImportError:
             return sorted(self.graph.resource.resolve("relationship/types").get().content)
 
         def get_constraints(self):
-            return self.graph.resource.resolve("schema/constraint").get().content
+            data = self.graph.resource.resolve("schema/constraint").get().content
+            return sort_dict_by_key(data, "label")
 
         def get_indexes(self):
-            return self.graph.resource.resolve("schema/index").get().content
+            data = self.graph.resource.resolve("schema/index").get().content
+            return sort_dict_by_key(data, "label")
 
         def get_property_keys(self):
             return sorted(self.graph.resource.resolve("propertykeys").get().content)
