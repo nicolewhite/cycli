@@ -41,6 +41,7 @@ class Neo4j:
     parameters = {}
 
     def __init__(self, host, port, username=None, password=None, ssl=False, timeout=None):
+        port = "7474" if port is None else port
         self.client = self.Client(host, port, username, password, ssl, timeout)
 
     def cypher(self, query):
@@ -151,7 +152,7 @@ class Neo4j:
         print(pretty_table(headers, rows))
 
 try:
-    from neo4j.v1 import GraphDatabase
+    from neo4j.v1 import GraphDatabase, basic_auth
     from json import loads
     try:
         from urllib.request import urlopen
@@ -161,14 +162,16 @@ try:
     class BoltClient(object):
 
         def __init__(self, host, port, username=None, password=None, ssl=False, timeout=None):
+            port = "7687" if port is None else port
             bolt_uri = "bolt://{host}".format(host=host, port=port)
 
-            if username and password:
-                # todo: set auth header
-                pass
-
             self.http_uri = "http://{host}:{port}/db/data/".format(host=host, port=port)
-            driver = GraphDatabase.driver(bolt_uri)
+
+            if username and password:
+                driver = GraphDatabase.driver(bolt_uri, auth=basic_auth(username, password), encrypted=False)
+            else:
+                driver = GraphDatabase.driver(bolt_uri, encrypted=False)
+
             self.session = driver.session()
 
         def cypher(self, statement, parameters):
@@ -181,11 +184,11 @@ try:
             tx = self.session.begin_transaction()
 
             try:
-                cursor = tx.run(statement, parameters)
-                rows = [list(row.values()) for row in cursor.stream()]
-                headers = cursor.keys()
+                result = tx.run(statement, parameters)
+                headers = result.keys()
+                rows = [x.values() for x in result]
                 tx.commit()
-                profile = cursor.summary.profile
+                profile = result.consume().profile
             except KeyboardInterrupt:
                 tx.rollback()
                 error = ""
