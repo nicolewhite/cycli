@@ -201,7 +201,7 @@ The `value` is evaluated with Python's `eval`, so you can also do things like th
 
 [Bolt](http://neo4j.com/blog/neo4j-3-0-milestone-1-release/) is Neo4j's new binary protocol. It is still in the
 pre-release stage and `cycli`'s support of Bolt should be considered an alpha feature. You can use Bolt with `cycli` by
-installing [Neo4j 3.0](http://alpha.neohq.net/), disabling authentication[1], and following the below steps:
+installing [Neo4j 3.0](http://neo4j.com/download/other-releases/), disabling authentication[1], and following the below steps:
 
 ```
 $ pip install virtualenv
