@@ -145,9 +145,14 @@ def test_match_keyword_completion(completer, complete_event):
     assert result == [Completion(text="MATCH", start_position=-3)]
 
 def test_nested_function_completion(completer, complete_event):
-    text = "MATCH n RETURN LENGTH(COL"
+    text = "MATCH n RETURN length(col"
     result = get_completions(completer, complete_event, text)
-    assert result == [Completion(text="COLLECT", start_position=-3)]
+    assert result == [Completion(text="collect", start_position=-3)]
+
+def test_lower_camel_case_functions(completer, complete_event):
+    text = "MATCH p = allS"
+    result = get_completions(completer, complete_event, text)
+    assert result == [Completion(text="allShortestPaths", start_position=-4)]
 
 def test_markov_w_after_match(completer, complete_event):
     # Out of the words starting with W, WHERE is most commonly used after MATCH.

@@ -20,7 +20,7 @@ for query in queries:
     function_indices = []
 
     for word in cypher.FUNCTIONS:
-        idx = [m.start() for m in re.finditer(" " + word + "\s+\(", query)]
+        idx = [m.start() for m in re.finditer(" " + word + "\s+\(", query, re.IGNORECASE)]
 
         for i in idx:
             function_indices.append((word, i))
@@ -29,7 +29,7 @@ for query in queries:
     keyword_indices = []
 
     for word in cypher.KEYWORDS:
-        idx = [m.start() for m in re.finditer(" " + word + " ", query)]
+        idx = [m.start() for m in re.finditer(" " + word + " ", query, re.IGNORECASE)]
 
         for i in idx:
             keyword_indices.append((word, i))
