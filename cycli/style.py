@@ -38,7 +38,7 @@ class CypherLexer(RegexLexer):
              r'|WHEN|WHERE|WITH'
              r'|XOR)\b', Keyword),
             (r'[+*/<>=~!@#%^&|`?-]', Operator),
-            (r'quit|exit|help|refresh|run-[0-9]+|save-csv|schema|schema-constraints|schema-indexes|schema-labels|schema-rels|env|export', Number),
+            (r'quit|exit|help|refresh|run-[0-9]+|save-csv|schema-[a-z]+|schema|env|export', Number),
             (r'[0-9]+', Name),
             (r'[a-zA-Z_][a-zA-Z0-9_]*', Name),
             (r"'(''|[^'])*'", String.Single),
