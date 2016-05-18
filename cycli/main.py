@@ -87,7 +87,7 @@ class Cycli:
         click.secho(" \ \_____\  \/\_____\  \ \_____\  \ \_____\  \ \_\ ", fg="blue")
         click.secho("  \/_____/   \/_____/   \/_____/   \/_____/   \/_/ ", fg="magenta")
 
-        msg = "\nUsing Bolt." if type(self.neo4j.client).__name__ == "BoltClient" else ""
+        msg = "\nUsing Bolt." if self.neo4j.graph.address.bolt else ""
 
         print(msg)
         print("Version: {}".format(__version__))
