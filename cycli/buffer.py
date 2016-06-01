@@ -1,6 +1,11 @@
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.filters import Condition
 
+
+class UserWantsOut(Exception):
+    pass
+
+
 class CypherBuffer(Buffer):
 
     def __init__(self, *args, **kwargs):

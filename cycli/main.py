@@ -17,7 +17,7 @@ from pygments.token import Token
 from cycli import __version__
 from cycli.style import CypherLexer, CypherStyle
 from cycli.completer import CypherCompleter
-from cycli.buffer import CypherBuffer
+from cycli.buffer import CypherBuffer, UserWantsOut
 from cycli.binder import CypherBinder
 from cycli.driver import Neo4j, AuthError, ConnectionError
 from cycli.table import pretty_table
@@ -123,9 +123,10 @@ class Cycli:
                 document = cli.run()
                 query = document.text
                 self.handle_query(query)
-
-        except:
+        except UserWantsOut:
             print("Goodbye!")
+        except Exception as e:
+            print(e)
 
     def handle_query(self, query):
         run_n = re.match('run-([0-9]+) (.*)', query, re.DOTALL)
@@ -135,7 +136,7 @@ class Cycli:
             print("Query aborted. You are in read-only mode.")
 
         elif query in ["quit", "exit"]:
-            raise Exception
+            raise UserWantsOut
 
         elif query == "help":
             print_help()
@@ -191,7 +192,8 @@ class Cycli:
             query = query[len("save-csv "):] if save_csv else query
 
             if count <= 0 or not query:
-                raise Exception
+                print("Check your syntax. cycli expects run-{n} {query} where {n} is an integer > 0 and {query} is a Cypher query.")
+                return
 
             total_duration = 0
             index = 0
