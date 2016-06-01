@@ -129,10 +129,15 @@ def test_no_cypher_completions_after_non_alpha(completer, complete_event):
     result = get_completions(completer, complete_event, text)
     assert result == []
 
-def property_completion_in_identifier_with_number(completer, complete_event):
-    text = "MATCH (p1:Person) WHERE p1."
+def test_property_completion_in_identifier_with_number(completer, complete_event):
+    text = "MATCH (p1:Person) WHERE p1.n"
     result = get_completions(completer, complete_event, text)
-    assert result == [Completion(text="name", start_position=0), Completion(text="title", start_position=0)]
+    assert result == [Completion(text="name", start_position=-1)]
+
+def test_property_completion_inside_function(completer, complete_event):
+    text = "MATCH (p:Person) WHERE exists(p.n"
+    result = get_completions(completer, complete_event, text)
+    assert result == [Completion(text="name", start_position=-1)]
 
 def test_no_completions_while_inside_string(completer, complete_event):
     text = "MATCH (p:Person) WHERE p.name = 'Tom H"

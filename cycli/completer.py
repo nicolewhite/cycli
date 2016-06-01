@@ -28,10 +28,11 @@ class CypherCompleter(Completer):
             choices = self.relationship_types
             lookup = self.everything_after_last(":", text_before_cursor)
         elif self.typing_property(text_before_cursor):
-            loc = text_before_cursor.rfind(".")
-            identifier = text_before_cursor[text_before_cursor.rfind(" ", 0, loc) + 1:loc]
+            period_loc = text_before_cursor.rfind(".")
+            variable_start_loc = max(text_before_cursor.rfind("(", 0, period_loc), text_before_cursor.rfind(" ", 0, period_loc))
+            variable = text_before_cursor[variable_start_loc + 1:period_loc]
 
-            if identifier.isalnum() and any(c.isalpha() for c in identifier):
+            if variable.isalnum() and any(c.isalpha() for c in variable):
                 choices = self.properties
                 lookup = self.everything_after_last(".", text_before_cursor)
             else:
@@ -130,4 +131,3 @@ class CypherCompleter(Completer):
                 return c == "."
 
         return False
-
