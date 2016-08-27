@@ -15,7 +15,7 @@ setup(name='cycli',
         'click==4.1',
         'prompt-toolkit==0.57',
         'Pygments==2.0.2',
-        'py2neo==3'
+        'py2neo==3.1.2'
       ],
       include_package_data=True,
       zip_safe=False,
