@@ -87,10 +87,8 @@ class Cycli:
         click.secho(" \ \_____\  \/\_____\  \ \_____\  \ \_____\  \ \_\ ", fg="blue")
         click.secho("  \/_____/   \/_____/   \/_____/   \/_____/   \/_/ ", fg="magenta")
 
-        msg = "\nUsing Bolt." if self.neo4j.graph.address.bolt else ""
-
-        print(msg)
-        print("Version: {}".format(__version__))
+        print("Cycli version: {}".format(__version__))
+        print("Neo4j version: {}".format(".".join(map(str, self.neo4j.neo4j_version))))
         print("Bug reports: https://github.com/nicolewhite/cycli/issues\n")
 
         completer = CypherCompleter(labels, relationship_types, properties)
