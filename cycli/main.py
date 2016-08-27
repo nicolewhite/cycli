@@ -25,7 +25,7 @@ from cycli.cypher import Cypher
 
 
 def get_tokens(x):
-        return [(Token.Prompt, "> ")]
+    return [(Token.Prompt, "> ")]
 
 
 class Cycli:
