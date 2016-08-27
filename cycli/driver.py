@@ -40,7 +40,7 @@ class Neo4j:
 
     parameters = {}
 
-    def __init__(self, host, port, username=None, password=None, ssl=False, timeout=None, bolt=True):
+    def __init__(self, host, port, username=None, password=None, ssl=False, timeout=None, bolt=None):
         if timeout is not None:
             http.socket_timeout = timeout
 
@@ -50,7 +50,7 @@ class Neo4j:
         self.graph = Graph(uri, user=username, password=password, bolt=bolt, secure=ssl)
 
         try:
-            self.neo4j_version = self.graph.neo4j_version
+            self.neo4j_version = self.graph.dbms.kernel_version
         except Unauthorized:
             raise AuthError(uri)
         except SocketError:
