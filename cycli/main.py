@@ -132,31 +132,22 @@ class Cycli:
 
         if self.cypher.is_a_write_query(query) and self.read_only:
             print("Query aborted. You are in read-only mode.")
-
         elif query in ["quit", "exit"]:
             raise UserWantsOut
-
         elif query == "help":
             print_help()
-
         elif query == "refresh":
             self.neo4j.refresh()
-
         elif query == "schema":
             self.neo4j.print_schema()
-
         elif query == "schema-indexes":
             self.neo4j.print_indexes()
-
         elif query == "schema-constraints":
             self.neo4j.print_constraints()
-
         elif query == "schema-labels":
             self.neo4j.print_labels()
-
         elif query == "schema-rels":
             self.neo4j.print_relationship_types()
-
         elif query.startswith("env"):
             if query == "env":
                 for key, value in self.neo4j.parameters.items():
@@ -213,7 +204,6 @@ class Cycli:
 
                     if profile:
                         self.neo4j.print_profile(profile)
-
                     if save_csv:
                         self.write_to_csvfile(headers, rows)
                 else:
@@ -273,13 +263,10 @@ def run(host, port, username, version, timeout, password, logfile, filename, ssl
 
     try:
         cycli = Cycli(host, port, username, password, logfile, filename, ssl, read_only, timeout)
-
     except AuthError:
         print("Unauthorized. See cycli --help for authorization instructions.")
-
     except ConnectionError:
         print("Connection refused. Is Neo4j turned on?")
-
     else:
         cycli.run()
 
