@@ -197,27 +197,6 @@ The `value` is evaluated with Python's `eval`, so you can also do things like th
 [0, 2, 4, 6, 8]
 ```
 
-## Using `cycli` with Bolt
-
-[Bolt](http://neo4j.com/blog/neo4j-3-0-milestone-1-release/) is Neo4j's new binary protocol. It is still in the
-pre-release stage and `cycli`'s support of Bolt should be considered an alpha feature. You can use Bolt with `cycli` by
-installing [Neo4j 3.0](http://neo4j.com/download/other-releases/), disabling authentication[1], and following the below steps:
-
-```
-$ pip install virtualenv
-$ virtualenv cycli-bolt
-$ source cycli-bolt/bin/activate
-$ pip install cycli
-$ git clone https://github.com/neo4j/neo4j-python-driver.git
-$ cd neo4j-python-driver
-$ python setup.py install
-$ cycli
-```
-
-You will see `Using Bolt.` on startup if you've successfully started `cycli` with the Bolt protocol.
-
-[1]: You can disable authentication by setting `dbms.security.auth_enabled=false` in `conf/neo4j-server.properties`.
-
 ## Credits
 
 This project depends heavily on [python-prompt-toolkit](https://github.com/jonathanslenders/python-prompt-toolkit) and
