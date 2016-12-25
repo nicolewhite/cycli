@@ -8,6 +8,7 @@ def pretty_table(headers, rows):
         return "Incorrect number of rows."
 
     rows = [[stringify(s) for s in row] for row in rows]
+    headers = [stringify(s) for s in headers]
 
     widths = col_widths(headers, rows)
 
