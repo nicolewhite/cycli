@@ -16,7 +16,7 @@ from pygments.token import Token
 
 from cycli import __version__
 from cycli.style import CypherLexer, CypherStyle
-from cycli.completer import CypherCompleter
+from cycli.completer import CypherCompleter, currently_inside_quotes
 from cycli.buffer import CypherBuffer, UserWantsOut
 from cycli.binder import CypherBinder
 from cycli.driver import Neo4j, AuthError, ConnectionError
@@ -28,8 +28,20 @@ def get_tokens(x):
     return [(Token.Prompt, "> ")]
 
 
-class Cycli:
+def split_queries_on_semicolons(queries):
+  # We only want to split on semicolons that aren't inside quotes.
+  semicolons = [i for i, c in enumerate(queries) if c == ';']
+  split_indices = [0]
 
+  for i in semicolons:
+    text = queries[split_indices[-1]:i + 1]
+    if not currently_inside_quotes(text):
+      split_indices.append(i + 1)
+
+  return [queries[i:j].strip() for i, j in zip(split_indices, split_indices[1:])]
+
+
+class Cycli:
     def __init__(self, host, port, username, password, logfile, filename, ssl, read_only, timeout):
         self.logfile = logfile
         self.filename = filename
@@ -53,7 +65,7 @@ class Cycli:
     def write_to_csvfile(headers, rows):
         filename = "cycli {}.csv".format(datetime.now().strftime("%Y-%m-%d at %I.%M.%S %p"))
 
-        with open(filename, "wt") as csvfile:
+        with open(filename, "wb") as csvfile:
             csvwriter = csv.writer(csvfile, quotechar=str('"'), quoting=csv.QUOTE_NONNUMERIC, delimiter=str(","))
             csvwriter.writerow(headers)
 
@@ -68,16 +80,13 @@ class Cycli:
         properties = self.neo4j.get_property_keys()
 
         if self.filename:
-            queries = self.filename.read()
-            queries = queries.split(";")[:-1]
+          with open(self.filename, "rb") as f:
+            queries = split_queries_on_semicolons(f.read())
 
             for query in queries:
-                query += ";"
-                query = query.strip()
-
-                print("> " + query)
-                self.handle_query(query)
-                print()
+              print("> " + query)
+              self.handle_query(query)
+              print()
 
             return
 
