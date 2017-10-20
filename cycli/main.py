@@ -74,66 +74,66 @@ class Cycli:
 
     csvfile.close()
 
-    def run(self):
-      labels = self.neo4j.get_labels()
-      relationship_types = self.neo4j.get_relationship_types()
-      properties = self.neo4j.get_property_keys()
+  def run(self):
+    labels = self.neo4j.get_labels()
+    relationship_types = self.neo4j.get_relationship_types()
+    properties = self.neo4j.get_property_keys()
 
-      if self.filename:
-        with open(self.filename, "rb") as f:
-          queries = split_queries_on_semicolons(f.read())
+    if self.filename:
+      with open(self.filename, "rb") as f:
+        queries = split_queries_on_semicolons(f.read())
 
-          for query in queries:
-            print("> " + query)
-            self.handle_query(query)
-            print()
-
-          return
-
-      click.secho(" ______     __  __     ______     __         __    ", fg="red")
-      click.secho("/\  ___\   /\ \_\ \   /\  ___\   /\ \       /\ \   ", fg="yellow")
-      click.secho("\ \ \____  \ \____ \  \ \ \____  \ \ \____  \ \ \  ", fg="green")
-      click.secho(" \ \_____\  \/\_____\  \ \_____\  \ \_____\  \ \_\ ", fg="blue")
-      click.secho("  \/_____/   \/_____/   \/_____/   \/_____/   \/_/ ", fg="magenta")
-
-      print("Cycli version: {}".format(__version__))
-      print("Neo4j version: {}".format(".".join(map(str, self.neo4j.neo4j_version))))
-      print("Bug reports: https://github.com/nicolewhite/cycli/issues\n")
-
-      completer = CypherCompleter(labels, relationship_types, properties)
-
-      layout = create_prompt_layout(
-        lexer=CypherLexer,
-        get_prompt_tokens=get_tokens,
-        reserve_space_for_menu=8,
-      )
-
-      buff = CypherBuffer(
-        accept_action=AcceptAction.RETURN_DOCUMENT,
-        history=FileHistory(filename=os.path.expanduser('~/.cycli_history')),
-        completer=completer,
-        complete_while_typing=True,
-      )
-
-      application = Application(
-        style=PygmentsStyle(CypherStyle),
-        buffer=buff,
-        layout=layout,
-        on_exit=AbortAction.RAISE_EXCEPTION,
-        key_bindings_registry=CypherBinder.registry
-      )
-
-      cli = CommandLineInterface(application=application, eventloop=create_eventloop())
-
-      try:
-        while True:
-          document = cli.run()
-          query = document.text
+        for query in queries:
+          print("> " + query)
           self.handle_query(query)
-      except UserWantsOut:
-        print("Goodbye!")
-      except Exception as e:
-        print(e)
+          print()
+
+        return
+
+    click.secho(" ______     __  __     ______     __         __    ", fg="red")
+    click.secho("/\  ___\   /\ \_\ \   /\  ___\   /\ \       /\ \   ", fg="yellow")
+    click.secho("\ \ \____  \ \____ \  \ \ \____  \ \ \____  \ \ \  ", fg="green")
+    click.secho(" \ \_____\  \/\_____\  \ \_____\  \ \_____\  \ \_\ ", fg="blue")
+    click.secho("  \/_____/   \/_____/   \/_____/   \/_____/   \/_/ ", fg="magenta")
+
+    print("Cycli version: {}".format(__version__))
+    print("Neo4j version: {}".format(".".join(map(str, self.neo4j.neo4j_version))))
+    print("Bug reports: https://github.com/nicolewhite/cycli/issues\n")
+
+    completer = CypherCompleter(labels, relationship_types, properties)
+
+    layout = create_prompt_layout(
+      lexer=CypherLexer,
+      get_prompt_tokens=get_tokens,
+      reserve_space_for_menu=8,
+    )
+
+    buff = CypherBuffer(
+      accept_action=AcceptAction.RETURN_DOCUMENT,
+      history=FileHistory(filename=os.path.expanduser('~/.cycli_history')),
+      completer=completer,
+      complete_while_typing=True,
+    )
+
+    application = Application(
+      style=PygmentsStyle(CypherStyle),
+      buffer=buff,
+      layout=layout,
+      on_exit=AbortAction.RAISE_EXCEPTION,
+      key_bindings_registry=CypherBinder.registry
+    )
+
+    cli = CommandLineInterface(application=application, eventloop=create_eventloop())
+
+    try:
+      while True:
+        document = cli.run()
+        query = document.text
+        self.handle_query(query)
+    except UserWantsOut:
+      print("Goodbye!")
+    except Exception as e:
+      print(e)
 
   def handle_query(self, query):
     run_n = re.match('run-([0-9]+) (.*)', query, re.DOTALL)
