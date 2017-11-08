@@ -13,7 +13,7 @@ features:
 test: unit features
 
 test_all:
-	neokit/neorun tests/test.sh 2.3.3 2.2.9 2.1.8
+	python neokit/neorun.py tests/test.sh 2.3.3 2.2.9 2.1.8
 
 markov:
 	python misc/markov.py
@@ -21,8 +21,8 @@ markov:
 	mv markov.txt misc
 
 download_neo4j:
-	neokit/neoget -i -x 2.3.3 2.2.9 2.1.8
-	neokit/neoctl unzip 2.3.3 2.2.9 2.1.8
+	python neokit/neoget.py -i -x 2.3.3 2.2.9 2.1.8
+	python neokit/neoctl.py unzip 2.3.3 2.2.9 2.1.8
 
 register:
 	python setup.py register -r pypi
