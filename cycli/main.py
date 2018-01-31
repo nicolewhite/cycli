@@ -3,6 +3,7 @@ from __future__ import unicode_literals, print_function
 import sys
 import re
 import os
+import io
 import csv
 from datetime import datetime
 
@@ -65,7 +66,7 @@ class Cycli:
   def write_to_csvfile(headers, rows):
     filename = "cycli {}.csv".format(datetime.now().strftime("%Y-%m-%d at %I.%M.%S %p"))
 
-    with open(filename, "wb") as csvfile:
+    with io.open(filename, "w") as csvfile:
       csvwriter = csv.writer(csvfile, quotechar=str('"'), quoting=csv.QUOTE_NONNUMERIC, delimiter=str(","))
       csvwriter.writerow(headers)
 
@@ -80,7 +81,7 @@ class Cycli:
     properties = self.neo4j.get_property_keys()
 
     if self.filename:
-      with open(self.filename, "rb") as f:
+      with io.open(self.filename, "r") as f:
         queries = split_queries_on_semicolons(f.read())
 
         for query in queries:
@@ -260,7 +261,7 @@ def print_help():
 @click.option("-p", "--password", help="Password for Neo4j authentication.")
 @click.option("-t", "--timeout", help="Set a global socket timeout for queries.", type=click.INT)
 @click.option('-l', '--logfile', type=click.File(mode="a", encoding="utf-8"), help="Log every query and its results to a file.")
-@click.option("-f", "--filename", type=click.File(mode="rb"), help="Execute semicolon-separated Cypher queries from a file.")
+@click.option("-f", "--filename", type=click.Path(exists=True), help="Execute semicolon-separated Cypher queries from a file.")
 @click.option("-s", "--ssl", is_flag=True, help="Use the HTTPS protocol.")
 @click.option("-r", "--read-only", is_flag=True, help="Do not allow any write queries.")
 def run(host, port, username, version, timeout, password, logfile, filename, ssl, read_only):
